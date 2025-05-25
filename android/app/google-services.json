@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "59735787889",
+    "project_id": "invo-d4222",
+    "storage_bucket": "invo-d4222.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:59735787889:android:f508ab34644936f37a4ed0",
+        "android_client_info": {
+          "package_name": "com.bfa.invo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcuO5Z1R3-BHT6AkQbEvdicpMpVOgDXE8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
