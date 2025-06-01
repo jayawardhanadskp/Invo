@@ -1,0 +1,308 @@
+import 'package:flutter/material.dart';
+import 'package:getwidget/getwidget.dart';
+
+class SellPiecePage extends StatefulWidget {
+  const SellPiecePage({super.key});
+
+  @override
+  State<SellPiecePage> createState() => _SellPiecePageState();
+}
+
+class _SellPiecePageState extends State<SellPiecePage> {
+  final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _selectbuyerController = TextEditingController();
+  final TextEditingController _buyerNameController = TextEditingController();
+  final TextEditingController _buyerNumberController = TextEditingController();
+  final TextEditingController _pieceController = TextEditingController();
+  final TextEditingController _priceController = TextEditingController();
+  List searchList = ["Flutter", "Angular", "Node js"];
+
+  final List<String> paymentOptions = ['Cash', 'Card', 'Credit'];
+  String selectedPaymentOption = 'Cash';
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
+          child: Column(
+            children: [
+              const SizedBox(height: 60),
+
+              Text(
+                'Add New Batch',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 30),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Color(0xFF101124),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border(
+                    top: BorderSide(color: Color(0xFF454654), width: 2),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 10),
+                    GFSearchBar(
+                      controller: _searchController,
+                      searchList: searchList,
+                      searchQueryBuilder:
+                          (query, list) =>
+                              list.where((item) {
+                                return item!.toString().toLowerCase().contains(
+                                  query.toLowerCase(),
+                                );
+                              }).toList(),
+                      overlaySearchListItemBuilder:
+                          (dynamic item) => Container(
+                            padding: const EdgeInsets.all(8),
+                            child: Text(
+                              item,
+                              style: const TextStyle(fontSize: 18),
+                            ),
+                          ),
+                      onItemSelected: (dynamic item) {
+                        setState(() {
+                          print('$item');
+                        });
+                      },
+                      padding: EdgeInsets.all(0),
+                    ),
+                    const SizedBox(height: 20),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Selected Buyer',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        const SizedBox(height: 5),
+                        TextFormField(
+                          controller: _selectbuyerController,
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Color(0xFF313341),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(6),
+                              borderSide: BorderSide.none,
+                            ),
+                            hintText: 'Please select a buyer',
+                            hintStyle: TextStyle(color: Colors.white54),
+                          ),
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Text('OR', style: TextStyle(color: Colors.white)),
+                    const SizedBox(height: 20),
+
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Add Buyer',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        const SizedBox(height: 5),
+                        TextFormField(
+                          controller: _buyerNameController,
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Color(0xFF313341),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(6),
+                              borderSide: BorderSide.none,
+                            ),
+                            hintText: 'Please enter name',
+                            hintStyle: TextStyle(color: Colors.white54),
+                          ),
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        const SizedBox(height: 15),
+
+                        TextFormField(
+                          controller: _buyerNumberController,
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Color(0xFF313341),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(6),
+                              borderSide: BorderSide.none,
+                            ),
+                            hintText: 'Please enter contact',
+                            hintStyle: TextStyle(color: Colors.white54),
+                          ),
+                          keyboardType: TextInputType.number,
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Payment Method',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        const SizedBox(height: 5),
+
+                        Row(
+                          children:
+                              paymentOptions.map((payment) {
+                                return Expanded(
+                                  child: InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        selectedPaymentOption = payment;
+                                      });
+                                      print(
+                                        'Selected payment option: $payment',
+                                      );
+                                    },
+                                    child: Container(
+                                      margin: const EdgeInsets.symmetric(
+                                        horizontal: 5,
+                                      ),
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        color:
+                                            selectedPaymentOption == payment
+                                                ? Color(0xFFB39CD0)
+                                                : Color(0xFF313341),
+                                        borderRadius: BorderRadius.circular(6),
+                                        border: Border.all(
+                                          color: Color(0xFF454654),
+                                          width: 2,
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          payment,
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          'Price & piece',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        const SizedBox(height: 5),
+                        TextFormField(
+                          controller: _priceController,
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Color(0xFF313341),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(6),
+                              borderSide: BorderSide.none,
+                            ),
+                            hintText: 'Please enter price ',
+                            hintStyle: TextStyle(color: Colors.white54),
+                          ),
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        const SizedBox(height: 15),
+                        TextFormField(
+                          controller: _pieceController,
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Color(0xFF313341),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(6),
+                              borderSide: BorderSide.none,
+                            ),
+                            hintText: 'Please enter piece count',
+                            hintStyle: TextStyle(color: Colors.white54),
+                          ),
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFB39CD0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10,
+                        ),
+                        fixedSize: Size(MediaQuery.of(context).size.width, 48),
+                      ),
+                      child: Text(
+                        'Complete Sale',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF01031A),
+                          fontFamily: 'Inter_Bold',
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Color(0xFFD6FFD8),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Current Stock',
+                      style: TextStyle(
+                        color: Color(0xFF36AE09),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Remaining pieces:',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        Text(
+                          '20',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
