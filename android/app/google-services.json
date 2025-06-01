@@ -12,7 +12,20 @@
           "package_name": "com.bfa.invo"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "59735787889-g6qs9mjb7iu47h15lha78tv2j0ji67cb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bfa.invo",
+            "certificate_hash": "216b5b999393f090bc92c40ae3cf56e0748b2f63"
+          }
+        },
+        {
+          "client_id": "59735787889-0h3q8v0vhgmmmf0j7h9bkps6gf7org42.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCcuO5Z1R3-BHT6AkQbEvdicpMpVOgDXE8"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "59735787889-0h3q8v0vhgmmmf0j7h9bkps6gf7org42.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "59735787889-bhcmuton2g1v88m86k21chlq83b1pbp7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.bfa.invo"
+              }
+            }
+          ]
         }
       }
     }
