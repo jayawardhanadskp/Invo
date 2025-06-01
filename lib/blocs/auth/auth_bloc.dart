@@ -10,7 +10,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository authRepository;
 
   AuthBloc(this.authRepository) : super(AuthInitial()) {
-
     on<SignInWithGoogle>((event, emit) async {
       emit(AuthLoading());
 
@@ -22,16 +21,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
-    on<AuthCheckRequested>((event, emit) {
-emit(AuthLoading());
-  final user = authRepository.getCurrentUser();
+    on<AuthCheckRequested>((event, emit) async {
+      emit(AuthLoading());
+      try {
+        final user = await authRepository.getCurrentUser();
 
-  if (user != null) {
-    emit(AuthSuccess(user));
-  } else {
-    emit(AuthInitial());
-  }
-});
-
+      if (user != null) {
+        emit(AuthSuccess(user));
+      } else {
+        emit(AuthInitial());
+      }
+      } catch (e) {
+        emit(AuthFailure("Session expired. Please sign in again. $e"));
+      }
+    });
   }
 }
