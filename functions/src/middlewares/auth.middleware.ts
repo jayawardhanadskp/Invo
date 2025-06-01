@@ -1,5 +1,7 @@
 import * as admin from "firebase-admin";
-import {Response, NextFunction} from "express";
+import {Request, Response, NextFunction} from "express";
+import { DecodedIdToken } from "firebase-admin/auth";
+
 
 /**
  * Middleware to authenticate Firebase ID token from Authorization header.
@@ -10,7 +12,11 @@ import {Response, NextFunction} from "express";
  * @param next - Express next function to pass control.
  */
 
-export async function authenticate(req: any, res: Response, next: NextFunction){
+export interface AuthenticatedRequest extends Request {
+  user?: DecodedIdToken;
+}
+
+export async function authenticate(req: AuthenticatedRequest, res: Response, next: NextFunction){
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({error: "Missing or invalid token"});
