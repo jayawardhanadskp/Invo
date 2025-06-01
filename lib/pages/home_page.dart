@@ -11,28 +11,26 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   final List<Map<String, String>> sampleSales = [
-  {
-    'customerName': 'Amit Sharma',
-    'amount': 'RS 2100',
-    'dateTime': 'Today, 2:30 PM',
-    'paymentMethod': 'Cash',
-  },
-  {
-    'customerName': 'Priya Verma',
-    'amount': 'RS 1500',
-    'dateTime': 'Yesterday, 5:00 PM',
-    'paymentMethod': 'Cash',
-  },
-  {
-    'customerName': 'Ravi Kumar',
-    'amount': 'RS 3200',
-    'dateTime': 'Today, 11:00 AM',
-    'paymentMethod': 'Card',
-  },
-];
-
+    {
+      'customerName': 'Amit Sharma',
+      'amount': 'RS 2100',
+      'dateTime': 'Today, 2:30 PM',
+      'paymentMethod': 'Cash',
+    },
+    {
+      'customerName': 'Priya Verma',
+      'amount': 'RS 1500',
+      'dateTime': 'Yesterday, 5:00 PM',
+      'paymentMethod': 'Cash',
+    },
+    {
+      'customerName': 'Ravi Kumar',
+      'amount': 'RS 3200',
+      'dateTime': 'Today, 11:00 AM',
+      'paymentMethod': 'Card',
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +42,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               // BlocConsumer<AuthBloc, AuthState>(
               //   listener: (context, state) {},
-        
+
               //   builder: (context, state) {
               //     if (state is AuthLoading) {
               //       return const Center(child: CircularProgressIndicator());
@@ -64,10 +62,10 @@ class _HomePageState extends State<HomePage> {
               //         ),
               //       );
               //     }
-        
+
               //   },
               // ),
-              const SizedBox(height: 80),
+              const SizedBox(height: 60),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -93,9 +91,9 @@ class _HomePageState extends State<HomePage> {
                   style: TextStyle(color: Colors.white),
                 ),
               ),
-        
+
               const SizedBox(height: 30),
-        
+
               GridView.count(
                 shrinkWrap: true,
                 padding: const EdgeInsets.all(0),
@@ -131,9 +129,9 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-        
+
               const SizedBox(height: 30),
-        
+
               Container(
                 decoration: BoxDecoration(
                   color: Color(0xFF101124),
@@ -175,9 +173,9 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ],
                       ),
-        
+
                       const SizedBox(height: 10),
-        
+
                       ElevatedButton(
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
@@ -189,7 +187,10 @@ class _HomePageState extends State<HomePage> {
                             horizontal: 20,
                             vertical: 10,
                           ),
-                          fixedSize: Size(MediaQuery.of(context).size.width, 40),
+                          fixedSize: Size(
+                            MediaQuery.of(context).size.width,
+                            40,
+                          ),
                         ),
                         child: Text(
                           'View Details',
@@ -205,9 +206,9 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-        
+
               const SizedBox(height: 20),
-        
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -223,7 +224,7 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
               const SizedBox(height: 20),
-        
+
               Container(
                 decoration: BoxDecoration(
                   color: Color(0xFF101124),
@@ -240,14 +241,15 @@ class _HomePageState extends State<HomePage> {
                         padding: EdgeInsets.zero,
                         physics: NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) {
-                        final sale = sampleSales[index];
-                        return _recentSaleCard(
-                          customerName: sale['customerName']!,
-                          amount: sale['amount']!,
-                          dateTime: sale['dateTime']!,
-                          paymentMethod: sale['paymentMethod']!,
-                        );
-                      },),
+                          final sale = sampleSales[index];
+                          return _recentSaleCard(
+                            customerName: sale['customerName']!,
+                            amount: sale['amount']!,
+                            dateTime: sale['dateTime']!,
+                            paymentMethod: sale['paymentMethod']!,
+                          );
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -289,9 +291,9 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-      
+
           const SizedBox(height: 8),
-      
+
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

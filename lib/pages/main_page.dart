@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:invo/pages/add_new_batch_page.dart';
 import 'package:invo/pages/home_page.dart';
+import 'package:invo/pages/sell_piece_page.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -11,8 +13,8 @@ class _MainPageState extends State<MainPage> {
 
   final List<Widget> _pages = [
     HomePage(),
-    Center(child: Text('Add Page', style: TextStyle(fontSize: 24))),
-    Center(child: Text('Sell Page', style: TextStyle(fontSize: 24))),
+    AddNewBatchPage(),
+    SellPiecePage(),
     Center(child: Text('Buyers Page', style: TextStyle(fontSize: 24))),
     Center(child: Text('Credit Page', style: TextStyle(fontSize: 24))),
     Center(child: Text('Reports Page', style: TextStyle(fontSize: 24))),
