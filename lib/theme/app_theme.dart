@@ -16,7 +16,7 @@ class AppTheme {
           fontWeight: FontWeight.bold,
         ),
       ),
-      colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+      colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFB39CD0),),
     );
   }
 
@@ -35,7 +35,7 @@ class AppTheme {
         ),
         
       ),
-      colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+      colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFB39CD0),),
       
     );
   }
