@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:invo/blocs/auth/auth_bloc.dart';
+import 'package:invo/pages/main_page.dart';
 
 class SigninPage extends StatefulWidget {
    SigninPage({super.key});
@@ -20,7 +21,16 @@ class _SigninPageState extends State<SigninPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Google Sign-In')),
-      body: BlocBuilder<AuthBloc, AuthState>(
+      body: BlocConsumer<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is AuthSuccess) {
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage()));
+          } else if (state is AuthFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Sign-in failed: ${state.error}')),
+            );
+          }
+        },
         builder: (context, state) {
           if (state is AuthLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -30,9 +40,9 @@ class _SigninPageState extends State<SigninPage> {
             return Center(child: Text('Error: ${state.error}'));
           }
 
-          if (state is AuthSuccess) {
-            return Center(child: Text('Welcome ${state.user.email}'));
-          }
+          // if (state is AuthSuccess) {
+          //   return Center(child: Text('Welcome ${state.user.email}'));
+          // }
 
           return Center(
             child: ElevatedButton.icon(
