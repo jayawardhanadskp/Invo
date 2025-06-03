@@ -1,7 +1,7 @@
 export interface BatchModel {
     id: string;
     grams: string;
-    pieces: string;
+    pieces: number;
     note?: string;
     createdAt: Date;
 }
