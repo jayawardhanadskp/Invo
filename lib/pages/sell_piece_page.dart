@@ -20,16 +20,64 @@ class _SellPiecePageState extends State<SellPiecePage> {
   final TextEditingController _buyerNumberController = TextEditingController();
   final TextEditingController _pieceController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
-  List searchList = ["Flutter", "Angular", "Node js"];
+  List searchList = [];
 
   final List<String> paymentOptions = ['Cash', 'Card', 'Credit'];
   String selectedPaymentOption = 'Cash';
+
+  BuyerModel? selectedBuyer;
 
   bool isNewBuyer() {
     return _buyerNameController.text.isNotEmpty &&
         _buyerNumberController.text.isNotEmpty;
   }
 
+  @override
+  void initState() {
+    super.initState();
+    context.read<BuyerBloc>().add(GetBuyersListEvent());
+
+    _searchController.addListener(() {
+      setState(() {});
+    });
+
+    Future.delayed(Duration.zero, () {
+      getBuyerNameById();
+    });
+  }
+
+  Future<void> getBuyerNameById() async {
+    final state = context.read<BuyerBloc>().state;
+    if (state is BuyersListLoadedState) {
+      final names = state.buyers.map((buyer) => buyer.name).toList();
+      setState(() {
+        searchList = names;
+      });
+    } else {
+      context.read<BuyerBloc>().stream.listen((state) {
+        if (state is BuyersListLoadedState) {
+          final names = state.buyers.map((buyer) => buyer.name).toList();
+          if (mounted) {
+            setState(() {
+              searchList = names;
+            });
+          }
+        }
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _selectbuyerController.dispose();
+    _buyerNameController.dispose();
+    _buyerNumberController.dispose();
+    _pieceController.dispose();
+    _priceController.dispose();
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,11 +116,14 @@ class _SellPiecePageState extends State<SellPiecePage> {
                       searchList: searchList,
                       searchQueryBuilder:
                           (query, list) =>
-                              list.where((item) {
-                                return item!.toString().toLowerCase().contains(
-                                  query.toLowerCase(),
-                                );
-                              }).toList(),
+                              list
+                                  .where(
+                                    (item) => item!
+                                        .toString()
+                                        .toLowerCase()
+                                        .contains(query.toLowerCase()),
+                                  )
+                                  .toList(),
                       overlaySearchListItemBuilder:
                           (dynamic item) => Container(
                             padding: const EdgeInsets.all(8),
@@ -82,12 +133,96 @@ class _SellPiecePageState extends State<SellPiecePage> {
                             ),
                           ),
                       onItemSelected: (dynamic item) {
-                        setState(() {
-                          print('$item');
-                        });
+                        final state = context.read<BuyerBloc>().state;
+                        if (state is BuyersListLoadedState) {
+                          final buyer = state.buyers.firstWhere(
+                            (b) => b.name == item.toString(),
+                            orElse: () => BuyerModel(name: '', phone: 0),
+                          );
+                          setState(() {
+                            _selectbuyerController.text = buyer.name;
+                            selectedBuyer = buyer;
+                          });
+                        }
                       },
+
                       padding: EdgeInsets.all(0),
                     ),
+
+                    const SizedBox(height: 20),
+                    if (selectedBuyer != null) ...[
+                      const SizedBox(height: 20),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                selectedBuyer!.name,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(left: 8),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Color(0xFF454654),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: Text(
+                                  '${selectedBuyer!.totalPieces ?? 0} purchases',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 5),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.phone_outlined,
+                                color: Colors.white,
+                                size: 14,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                selectedBuyer!.phone.toString(),
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 5),
+                          if ((selectedBuyer!.totalDue ?? 0) > 0)
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.warning_amber_rounded,
+                                  color: Color(0xFFFF3B30),
+                                  size: 17,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'RS. ${selectedBuyer!.totalDue} credit due',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Color(0xFFFF3B30),
+                                  ),
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
+                    ],
+
                     const SizedBox(height: 20),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
