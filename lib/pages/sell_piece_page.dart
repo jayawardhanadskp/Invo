@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:invo/blocs/purchase/purchase_bloc.dart';
+import 'package:invo/models/buyer_model.dart';
+import 'package:invo/models/purchase_model.dart';
 
 class SellPiecePage extends StatefulWidget {
   const SellPiecePage({super.key});
@@ -19,6 +23,11 @@ class _SellPiecePageState extends State<SellPiecePage> {
 
   final List<String> paymentOptions = ['Cash', 'Card', 'Credit'];
   String selectedPaymentOption = 'Cash';
+
+  bool isNewBuyer() {
+    return _buyerNameController.text.isNotEmpty &&
+        _buyerNumberController.text.isNotEmpty;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -236,7 +245,44 @@ class _SellPiecePageState extends State<SellPiecePage> {
                       ],
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        if (_pieceController.text.isEmpty ||
+                            _pieceController.text == '0') {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Please enter a valid piece count.',
+                              ),
+                            ),
+                          );
+                          return;
+                        }
+
+                        if (isNewBuyer()) {
+                          final buyer = BuyerModel(
+                            name: _buyerNameController.text,
+                            phone: int.parse(_buyerNumberController.text),
+                          );
+
+                          print(selectedPaymentOption);
+                          final purchase = PurchaseModel(
+                            pieces: int.parse(_pieceController.text),
+                            amount: int.parse(_priceController.text),
+                            paymentType: selectedPaymentOption,
+                            paymentStatus:
+                                selectedPaymentOption == 'Credit'
+                                    ? 'Due'
+                                    : 'Paid',
+                            purchaseDate: DateTime.now(),
+                          );
+                          context.read<PurchaseBloc>().add(
+                            CreatePurchaseNewBuyerEvent(
+                              buyer: buyer,
+                              purchase: purchase,
+                            ),
+                          );
+                        }
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFFB39CD0),
                         shape: RoundedRectangleBorder(
