@@ -13,3 +13,13 @@ class CreatePurchaseNewBuyerEvent extends PurchaseEvent {
   });
 }
 
+class CreatePurchaseExistingBuyerEvent extends PurchaseEvent {
+  final BuyerModel buyer;
+  final PurchaseModel purchase;
+
+  CreatePurchaseExistingBuyerEvent({
+    required this.buyer,
+    required this.purchase,
+  });
+}
+
