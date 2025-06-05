@@ -15,7 +15,16 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
       try {
         purchasesRepository.createPurchaseNewBuyer(event.buyer, event.purchase);
         emit(PurchaseSuccessState(message: 'Purchase created successfully'));
-        
+      } catch (e) {
+        emit(PurchaseErrorState(error: e.toString()));
+      }
+    });
+
+    on<CreatePurchaseExistingBuyerEvent>((event, emit) {
+      emit(PurchaseLoadingState());
+      try {
+        purchasesRepository.createPurchaseExistingBuyer(event.buyer, event.purchase);
+        emit(PurchaseSuccessState(message: 'Purchase created successfully'));
       } catch (e) {
         emit(PurchaseErrorState(error: e.toString()));
       }
