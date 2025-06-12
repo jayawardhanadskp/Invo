@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:invo/blocs/due/due_bloc.dart';
+import 'package:invo/repositories/due_repository.dart';
 
 class DuePage extends StatefulWidget {
   const DuePage({super.key});
@@ -10,6 +13,14 @@ class DuePage extends StatefulWidget {
 class _DuePageState extends State<DuePage> {
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<DueBloc>().add(GetAllDueCount());
+    DueRepository().getDueDetailList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,13 +64,20 @@ class _DuePageState extends State<DuePage> {
                       ],
                     ),
                     const SizedBox(height: 10),
-                    Text(
-                      'RS 2100',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Color(0xFFFF3B30),
-                        fontWeight: FontWeight.bold,
-                      ),
+                    BlocBuilder<DueBloc, DueState>(
+                      builder: (context, state) {
+                        if (state is GetAllDueCountSuccess) {
+                          return Text(
+                            'RS ${state.count}',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Color(0xFFFF3B30),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          );
+                        }
+                        return Text('-- --');
+                      },
                     ),
                   ],
                 ),
@@ -71,10 +89,7 @@ class _DuePageState extends State<DuePage> {
                 shape: WidgetStatePropertyAll(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
-                    side: BorderSide(
-                      color: Colors.white,
-                      width: 1,
-                    ),
+                    side: BorderSide(color: Colors.white, width: 1),
                   ),
                 ),
                 backgroundColor: WidgetStatePropertyAll(Color(0xFF101124)),
@@ -268,32 +283,32 @@ class _DuePageState extends State<DuePage> {
             Center(
               child: Container(
                 width: 180,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Color(0xFF00480A),
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.check_circle_outline_sharp,
-                          color: Colors.white,
-                          size: 18,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Record Payment  ',
-                          style: TextStyle(fontSize: 14, color: Colors.white),
-                        ),
-                      ],
-                    ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: Color(0xFF00480A),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.check_circle_outline_sharp,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Record Payment  ',
+                        style: TextStyle(fontSize: 14, color: Colors.white),
+                      ),
+                    ],
                   ),
                 ),
+              ),
             ),
           ],
         );
