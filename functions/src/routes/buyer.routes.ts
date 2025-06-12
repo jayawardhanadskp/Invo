@@ -7,7 +7,7 @@ import { getBuyerController } from '../controllers/buyer.controller';
 const router = Router();
 
 router.post('/create', authenticate, createBuyerController);
-router.post('/get-buyers', authenticate, getBuyersController);
-router.post('/get-buyer', authenticate, getBuyerController);
+router.get('/get-buyers', authenticate, getBuyersController);
+router.get('/get-buyer/:buyerId', authenticate, getBuyerController);
 
 export default router;

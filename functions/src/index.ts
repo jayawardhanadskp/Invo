@@ -5,6 +5,8 @@ import authRoutes from "./routes/auth.routes";
 import batchRoutes from "./routes/batch.routes";
 import buyerRoutes from "./routes/buyer.routes";
 import purchaseRouter from "./routes/purchases.routes";
+import dueRouter from "./routes/due.routes";
+
 
 admin.initializeApp();
 const app = express();
@@ -15,5 +17,6 @@ app.use("/auth", authRoutes);
 app.use("/batch", batchRoutes);
 app.use("/buyer", buyerRoutes);
 app.use("/purchases", purchaseRouter);
+app.use("/due", dueRouter);
 
 exports.api = functions.https.onRequest(app);

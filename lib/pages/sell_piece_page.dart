@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:invo/blocs/buyer/buyer_bloc.dart';
 import 'package:invo/blocs/purchase/purchase_bloc.dart';
 import 'package:invo/models/buyer_model.dart';
 import 'package:invo/models/purchase_model.dart';
@@ -19,14 +20,67 @@ class _SellPiecePageState extends State<SellPiecePage> {
   final TextEditingController _buyerNumberController = TextEditingController();
   final TextEditingController _pieceController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
-  List searchList = ["Flutter", "Angular", "Node js"];
+  List searchList = [];
 
   final List<String> paymentOptions = ['Cash', 'Card', 'Credit'];
   String selectedPaymentOption = 'Cash';
 
+  BuyerModel? selectedBuyer;
+
   bool isNewBuyer() {
     return _buyerNameController.text.isNotEmpty &&
         _buyerNumberController.text.isNotEmpty;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<BuyerBloc>().add(GetBuyersListEvent());
+
+    _searchController.addListener(() {
+      setState(() {});
+    });
+
+    Future.delayed(Duration.zero, () {
+      getBuyerNameById();
+    });
+
+    _buyerNameController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  Future<void> getBuyerNameById() async {
+    final state = context.read<BuyerBloc>().state;
+    if (state is BuyersListLoadedState) {
+      final names = state.buyers.map((buyer) => buyer.name).toList();
+      setState(() {
+        searchList = names;
+      });
+    } else {
+      context.read<BuyerBloc>().stream.listen((state) {
+        if (state is BuyersListLoadedState) {
+          final names = state.buyers.map((buyer) => buyer.name).toList();
+          if (mounted) {
+            setState(() {
+              searchList = names;
+            });
+          }
+        }
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _selectbuyerController.dispose();
+    _buyerNameController.dispose();
+    _buyerNumberController.dispose();
+    _pieceController.dispose();
+    _priceController.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -61,102 +115,204 @@ class _SellPiecePageState extends State<SellPiecePage> {
                 child: Column(
                   children: [
                     const SizedBox(height: 10),
-                    GFSearchBar(
-                      controller: _searchController,
-                      searchList: searchList,
-                      searchQueryBuilder:
-                          (query, list) =>
-                              list.where((item) {
-                                return item!.toString().toLowerCase().contains(
-                                  query.toLowerCase(),
-                                );
-                              }).toList(),
-                      overlaySearchListItemBuilder:
-                          (dynamic item) => Container(
-                            padding: const EdgeInsets.all(8),
-                            child: Text(
-                              item,
-                              style: const TextStyle(fontSize: 18),
+                    if (_buyerNameController.text.isEmpty) ...[
+                      GFSearchBar(
+                        controller: _searchController,
+                        searchList: searchList,
+                        searchQueryBuilder:
+                            (query, list) =>
+                                list
+                                    .where(
+                                      (item) => item!
+                                          .toString()
+                                          .toLowerCase()
+                                          .contains(query.toLowerCase()),
+                                    )
+                                    .toList(),
+                        overlaySearchListItemBuilder:
+                            (dynamic item) => Container(
+                              padding: const EdgeInsets.all(8),
+                              child: Text(
+                                item,
+                                style: const TextStyle(fontSize: 18),
+                              ),
                             ),
-                          ),
-                      onItemSelected: (dynamic item) {
-                        setState(() {
-                          print('$item');
-                        });
-                      },
-                      padding: EdgeInsets.all(0),
-                    ),
-                    const SizedBox(height: 20),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Selected Buyer',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        const SizedBox(height: 5),
-                        TextFormField(
-                          controller: _selectbuyerController,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Color(0xFF313341),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(6),
-                              borderSide: BorderSide.none,
+                        onItemSelected: (dynamic item) {
+                          print(item);
+                          final state = context.read<BuyerBloc>().state;
+                          if (state is BuyersListLoadedState) {
+                            final buyer = state.buyers.firstWhere(
+                              (b) => b.name == item.toString(),
+                              orElse: () => BuyerModel(name: '', phone: 0),
+                            );
+                            setState(() {
+                              _selectbuyerController.text = buyer.name;
+                              selectedBuyer = buyer;
+                            });
+                          }
+
+                          if (item == null) {
+                            setState(() {
+                              selectedBuyer = null;
+                            });
+                          }
+                        },
+
+                        padding: EdgeInsets.all(0),
+                      ),
+
+                      const SizedBox(height: 20),
+                      if (selectedBuyer != null) ...[
+                        const SizedBox(height: 20),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  selectedBuyer!.name,
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Container(
+                                  margin: const EdgeInsets.only(left: 8),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Color(0xFF454654),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: Text(
+                                    '${selectedBuyer!.totalPieces} purchases',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ],
                             ),
-                            hintText: 'Please select a buyer',
-                            hintStyle: TextStyle(color: Colors.white54),
-                          ),
-                          style: TextStyle(color: Colors.white),
+                            const SizedBox(height: 5),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.phone_outlined,
+                                  color: Colors.white,
+                                  size: 14,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  selectedBuyer!.phone.toString(),
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 5),
+                            if ((selectedBuyer!.totalDue) > 0)
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.warning_amber_rounded,
+                                    color: Color(0xFFFF3B30),
+                                    size: 17,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'RS. ${selectedBuyer!.totalDue} credit due',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Color(0xFFFF3B30),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                          ],
                         ),
                       ],
-                    ),
-                    const SizedBox(height: 20),
-                    Text('OR', style: TextStyle(color: Colors.white)),
-                    const SizedBox(height: 20),
 
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Add Buyer',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        const SizedBox(height: 5),
-                        TextFormField(
-                          controller: _buyerNameController,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Color(0xFF313341),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(6),
-                              borderSide: BorderSide.none,
-                            ),
-                            hintText: 'Please enter name',
-                            hintStyle: TextStyle(color: Colors.white54),
+                      const SizedBox(height: 20),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Selected Buyer',
+                            style: TextStyle(color: Colors.white),
                           ),
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        const SizedBox(height: 15),
+                          const SizedBox(height: 5),
+                          TextFormField(
+                            controller: _selectbuyerController,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Color(0xFF313341),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(6),
+                                borderSide: BorderSide.none,
+                              ),
+                              hintText: 'Please select a buyer',
+                              hintStyle: TextStyle(color: Colors.white54),
+                            ),
+                            readOnly: true,
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                    ],
 
-                        TextFormField(
-                          controller: _buyerNumberController,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Color(0xFF313341),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(6),
-                              borderSide: BorderSide.none,
-                            ),
-                            hintText: 'Please enter contact',
-                            hintStyle: TextStyle(color: Colors.white54),
+                    if (selectedBuyer == null &&
+                        _buyerNameController.text.isEmpty) ...[
+                      Text('OR', style: TextStyle(color: Colors.white)),
+                      const SizedBox(height: 20),
+                    ],
+                    if (selectedBuyer == null) ...[
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Add Buyer',
+                            style: TextStyle(color: Colors.white),
                           ),
-                          keyboardType: TextInputType.number,
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
+                          const SizedBox(height: 5),
+                          TextFormField(
+                            controller: _buyerNameController,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Color(0xFF313341),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(6),
+                                borderSide: BorderSide.none,
+                              ),
+                              hintText: 'Please enter name',
+                              hintStyle: TextStyle(color: Colors.white54),
+                            ),
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          const SizedBox(height: 15),
+
+                          TextFormField(
+                            controller: _buyerNumberController,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Color(0xFF313341),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(6),
+                                borderSide: BorderSide.none,
+                              ),
+                              hintText: 'Please enter contact',
+                              hintStyle: TextStyle(color: Colors.white54),
+                            ),
+                            keyboardType: TextInputType.number,
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                    ],
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -264,7 +420,6 @@ class _SellPiecePageState extends State<SellPiecePage> {
                             phone: int.parse(_buyerNumberController.text),
                           );
 
-                          print(selectedPaymentOption);
                           final purchase = PurchaseModel(
                             pieces: int.parse(_pieceController.text),
                             amount: int.parse(_priceController.text),
@@ -277,6 +432,30 @@ class _SellPiecePageState extends State<SellPiecePage> {
                           );
                           context.read<PurchaseBloc>().add(
                             CreatePurchaseNewBuyerEvent(
+                              buyer: buyer,
+                              purchase: purchase,
+                            ),
+                          );
+                        } else {
+                          final buyer = BuyerModel(
+                            id: selectedBuyer!.id,
+                            name: selectedBuyer!.name,
+                            phone: selectedBuyer!.phone,
+                          );
+
+                          final purchase = PurchaseModel(
+                            pieces: int.parse(_pieceController.text),
+                            amount: int.parse(_priceController.text),
+                            paymentType: selectedPaymentOption,
+                            paymentStatus:
+                                selectedPaymentOption == 'Credit'
+                                    ? 'Due'
+                                    : 'Paid',
+                            purchaseDate: DateTime.now(),
+                          );
+
+                          context.read<PurchaseBloc>().add(
+                            CreatePurchaseExistingBuyerEvent(
                               buyer: buyer,
                               purchase: purchase,
                             ),

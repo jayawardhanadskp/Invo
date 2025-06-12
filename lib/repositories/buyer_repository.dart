@@ -41,4 +41,36 @@ class BuyerRepository {
       throw Exception('Failed to create buyer: $e');
     }
   }
+
+  Future<List<BuyerModel>>? getBuyers() async {
+    try {
+      final idToken = await DatabaseService().getToken();
+      if (idToken == null) {
+        throw Exception('No ID token found');
+      }
+
+      final response = await _dio.get(
+        '$_baseUrl/buyer/get-buyers',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $idToken',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        final List<dynamic> buyersData = data['data'];
+        final List<BuyerModel> buyers =
+            buyersData.map((buyer) => BuyerModel.fromMap(buyer)).toList();
+        print('Buyers fetched successfully: ${buyers.length} buyers found');
+        return buyers;
+      }
+      return [];
+    } catch (e) {
+      print('Error fetching buyers: $e');
+      throw Exception('Failed to fetch buyers: $e');
+    }
+  }
 }
