@@ -5,6 +5,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:invo/blocs/auth/auth_bloc.dart';
 import 'package:invo/blocs/batch/batch_bloc.dart';
 import 'package:invo/blocs/buyer/buyer_bloc.dart';
+import 'package:invo/blocs/due/due_bloc.dart';
 import 'package:invo/blocs/purchase/purchase_bloc.dart';
 import 'package:invo/firebase_options.dart';
 import 'package:invo/pages/main_page.dart';
@@ -12,6 +13,7 @@ import 'package:invo/pages/signin_page.dart';
 import 'package:invo/repositories/auth_repository.dart';
 import 'package:invo/repositories/batch_repository.dart';
 import 'package:invo/repositories/buyer_repository.dart';
+import 'package:invo/repositories/due_repository.dart';
 import 'package:invo/repositories/purchases_repository.dart';
 import 'package:invo/theme/app_theme.dart';
 
@@ -38,6 +40,7 @@ class MyApp extends StatelessWidget {
         RepositoryProvider<BatchRepository>(create: (context) => BatchRepository()),
         RepositoryProvider<PurchasesRepository>(create: (context) => PurchasesRepository()),
         RepositoryProvider<BuyerRepository>(create: (context) => BuyerRepository()),
+        RepositoryProvider<DueRepository>(create: (context) => DueRepository())
       ],
       child: MultiBlocProvider(
         providers: [
@@ -45,6 +48,7 @@ class MyApp extends StatelessWidget {
           BlocProvider<BatchBloc>(create: (_) => BatchBloc(BatchRepository())),
           BlocProvider<PurchaseBloc>(create: (_) => PurchaseBloc(PurchasesRepository())),
           BlocProvider<BuyerBloc>(create: (_) => BuyerBloc(BuyerRepository())),
+          BlocProvider<DueBloc>(create: (_) => DueBloc(DueRepository())),
         ],
         child: MaterialApp(
           title: 'Invo',
