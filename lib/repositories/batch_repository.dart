@@ -16,7 +16,6 @@ class BatchRepository {
   ) async {
     try {
       final idToken = await DatabaseService().getToken();
-      print(idToken);
       if (idToken == null) {
         throw Exception('No ID token found');
       }
