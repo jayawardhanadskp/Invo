@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:invo/blocs/due/due_bloc.dart';
-import 'package:invo/repositories/due_repository.dart';
 
 class DuePage extends StatefulWidget {
   const DuePage({super.key});
@@ -17,8 +17,37 @@ class _DuePageState extends State<DuePage> {
   @override
   void initState() {
     super.initState();
-    context.read<DueBloc>().add(GetAllDueCount());
-    DueRepository().getDueDetailList();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Future.delayed(Duration(seconds: 3), () {
+        context.read<DueBloc>().add(GetAllDueCount());
+      // });
+      context.read<DueBloc>().add(GetBuyersWithDueList());
+    });
+
+    _searchController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  
+  List<dynamic> _filterBuyersWithDue(List<dynamic> buyersList) {
+    final queary = _searchController.text.toLowerCase();
+    if (queary.isEmpty) return buyersList;
+    return buyersList.where((b) {
+      final name = b['name']?.toString().toLowerCase() ?? '';
+      return name.contains(queary);
+    }).toList();
+  }
+
+  String formatDate(String? isoDateString) {
+    if (isoDateString == null) return 'No Date';
+
+    try {
+      final date  = DateTime.parse(isoDateString).toLocal();
+      return DateFormat('dd MM yyyy').format(date);
+    } catch (e) {
+      return 'Invalid Date';
+    }
   }
 
   @override
@@ -66,8 +95,9 @@ class _DuePageState extends State<DuePage> {
                     const SizedBox(height: 10),
                     BlocBuilder<DueBloc, DueState>(
                       builder: (context, state) {
-                        if (state is GetAllDueCountSuccess) {
-                          return Text(
+                        if (state is DueDataState && state.count != null) {
+                          // if (state.count != null) {
+                            return Text(
                             'RS ${state.count}',
                             style: TextStyle(
                               fontSize: 20,
@@ -75,6 +105,7 @@ class _DuePageState extends State<DuePage> {
                               fontWeight: FontWeight.bold,
                             ),
                           );
+                          
                         }
                         return Text('-- --');
                       },
@@ -108,28 +139,56 @@ class _DuePageState extends State<DuePage> {
                     bottom: BorderSide(color: Color(0xFF454654), width: 2),
                   ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buyerDueCard(
-                      'Priya Patel',
-                      '2000',
-                      '+91 9876543211',
-                      'Since: 15 Apr 2023',
-                    ),
-                    _buyerDueCard(
-                      'Rahul Sharma',
-                      ' 1500',
-                      '+91 9876543212',
-                      'Since: 10 Apr 2023',
-                    ),
-                    _buyerDueCard(
-                      'Anita Desai',
-                      '3000',
-                      '+91 9876543213',
-                      'Since: 20 Mar 2023',
-                    ),
-                  ],
+                child: BlocConsumer<DueBloc, DueState>(
+                  listener: (context, state) {
+                    // if (state is DueDataState && state.dueDetailsList != null) {
+                    //   context.read<DueBloc>().add(GetAllDueCount());
+                    // }
+                  },
+                  builder: (context, state) {
+                    if (state is DueDataState && state.isLoadingList == true) {
+                      return Center(
+                        child: CircularProgressIndicator.adaptive(),
+                      );
+                    } 
+                    //else if (state is GetBuyersWithDueListError) {
+                    //   return Center(
+                    //     child: Text(
+                    //       state.message,
+                    //       style: TextStyle(color: Colors.red),
+                    //     ),
+                    //   );
+                    // } else 
+                    if (state is DueDataState && state.dueDetailsList != null) {
+                      final buyersList = _filterBuyersWithDue(
+                        state.dueDetailsList!,
+                      );
+                      if (buyersList.isEmpty) {
+                        return Center(
+                          child: Text(
+                            'No buyers found',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        );
+                      }
+                      return ListView.builder(
+                        itemCount: buyersList.length,
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        padding: EdgeInsets.zero,
+                        itemBuilder: (context, index) {
+                          final buyer = buyersList[index];
+                          return _buyerDueCard(
+                            buyer['name']?.toString() ?? 'Unknown',
+                            buyer['totalDue']?.toString() ?? '0',
+                            buyer['phone']?.toString() ?? '',
+                            formatDate(buyer['firstDueDate']),
+                          );
+                        },
+                      );
+                    }
+                    return SizedBox();
+                  },
                 ),
               ),
             ],
