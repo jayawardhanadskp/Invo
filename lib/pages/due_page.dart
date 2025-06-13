@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:invo/blocs/due/due_bloc.dart';
+import 'package:invo/utils/app_snackbars.dart';
 
 class DuePage extends StatefulWidget {
   const DuePage({super.key});
@@ -19,7 +20,7 @@ class _DuePageState extends State<DuePage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Future.delayed(Duration(seconds: 3), () {
-        context.read<DueBloc>().add(GetAllDueCount());
+      context.read<DueBloc>().add(GetAllDueCount());
       // });
       context.read<DueBloc>().add(GetBuyersWithDueList());
     });
@@ -29,7 +30,6 @@ class _DuePageState extends State<DuePage> {
     });
   }
 
-  
   List<dynamic> _filterBuyersWithDue(List<dynamic> buyersList) {
     final queary = _searchController.text.toLowerCase();
     if (queary.isEmpty) return buyersList;
@@ -43,7 +43,7 @@ class _DuePageState extends State<DuePage> {
     if (isoDateString == null) return 'No Date';
 
     try {
-      final date  = DateTime.parse(isoDateString).toLocal();
+      final date = DateTime.parse(isoDateString).toLocal();
       return DateFormat('dd MM yyyy').format(date);
     } catch (e) {
       return 'Invalid Date';
@@ -97,7 +97,7 @@ class _DuePageState extends State<DuePage> {
                       builder: (context, state) {
                         if (state is DueDataState && state.count != null) {
                           // if (state.count != null) {
-                            return Text(
+                          return Text(
                             'RS ${state.count}',
                             style: TextStyle(
                               fontSize: 20,
@@ -105,7 +105,6 @@ class _DuePageState extends State<DuePage> {
                               fontWeight: FontWeight.bold,
                             ),
                           );
-                          
                         }
                         return Text('-- --');
                       },
@@ -150,7 +149,7 @@ class _DuePageState extends State<DuePage> {
                       return Center(
                         child: CircularProgressIndicator.adaptive(),
                       );
-                    } 
+                    }
                     //else if (state is GetBuyersWithDueListError) {
                     //   return Center(
                     //     child: Text(
@@ -158,7 +157,7 @@ class _DuePageState extends State<DuePage> {
                     //       style: TextStyle(color: Colors.red),
                     //     ),
                     //   );
-                    // } else 
+                    // } else
                     if (state is DueDataState && state.dueDetailsList != null) {
                       final buyersList = _filterBuyersWithDue(
                         state.dueDetailsList!,
@@ -179,6 +178,7 @@ class _DuePageState extends State<DuePage> {
                         itemBuilder: (context, index) {
                           final buyer = buyersList[index];
                           return _buyerDueCard(
+                            buyer['id'],
                             buyer['name']?.toString() ?? 'Unknown',
                             buyer['totalDue']?.toString() ?? '0',
                             buyer['phone']?.toString() ?? '',
@@ -198,7 +198,13 @@ class _DuePageState extends State<DuePage> {
     );
   }
 
-  Widget _buyerDueCard(String name, String amount, String phone, String since) {
+  Widget _buyerDueCard(
+    String buyerId,
+    String name,
+    String amount,
+    String phone,
+    String since,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: Column(
@@ -234,7 +240,7 @@ class _DuePageState extends State<DuePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               InkWell(
-                onTap: _showPaymentDialog,
+                onTap: () => _showPaymentDialog(buyerId),
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 14,
@@ -295,81 +301,111 @@ class _DuePageState extends State<DuePage> {
     );
   }
 
-  void _showPaymentDialog() {
+  void _showPaymentDialog(String buyerId) {
     showDialog(
       context: context,
 
       builder: (context) {
-        return AlertDialog(
-          shape: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Color(0xFF454654), width: 2),
-          ),
-          backgroundColor: Color(0xFF101124).withOpacity(0.6),
-          title: Center(child: Text('Payment Confirmation')),
-          titleTextStyle: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Enter amount paid',
-                style: TextStyle(fontSize: 14, color: Colors.white),
-              ),
-              const SizedBox(height: 5),
-              TextFormField(
-                controller: _amountController,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Color(0xFF313341),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(6),
-                    borderSide: BorderSide(color: Colors.white, width: 2),
-                  ),
-                  hintText: 'Amount',
-                  hintStyle: TextStyle(color: Colors.white54),
+        return BlocListener<DueBloc, DueState>(
+          listener: (context, state) async {
+            if (state is DueDataState && state.payDueSucess != null) {
+              print(state.payDueSucess);
+
+              AppSnackbars.showSucessSnackbar(
+                context,
+                'Credit Due Saved Sucessfully',
+              );
+
+              await Future.delayed(Duration(microseconds: 300));
+
+              Navigator.pop(context);
+
+              // if (mounted) {
+              //   context.read<DueBloc>().add(GetAllDueCount());
+              //   context.read<DueBloc>().add(GetBuyersWithDueList());
+              // }
+            }
+          },
+          child: AlertDialog(
+            shape: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Color(0xFF454654), width: 2),
+            ),
+            backgroundColor: Color(0xFF101124).withOpacity(0.6),
+            title: Center(child: Text('Payment Confirmation')),
+            titleTextStyle: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Enter amount paid',
+                  style: TextStyle(fontSize: 14, color: Colors.white),
                 ),
-                style: TextStyle(color: Colors.white),
-                keyboardType: TextInputType.number,
+                const SizedBox(height: 5),
+                TextFormField(
+                  controller: _amountController,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Color(0xFF313341),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(6),
+                      borderSide: BorderSide(color: Colors.white, width: 2),
+                    ),
+                    hintText: 'Amount',
+                    hintStyle: TextStyle(color: Colors.white54),
+                  ),
+                  style: TextStyle(color: Colors.white),
+                  keyboardType: TextInputType.number,
+                ),
+              ],
+            ),
+            actions: [
+              Center(
+                child: InkWell(
+                  onTap: () async {
+                    if (_amountController.text.isNotEmpty) {
+                      context.read<DueBloc>().add(
+                        PayDueEvent(buyerId, int.parse(_amountController.text)),
+                      );
+                    }
+                  },
+                  child: Container(
+                    width: 180,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Color(0xFF00480A),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.check_circle_outline_sharp,
+                            color: Colors.white,
+                            size: 18,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Record Payment',
+                            style: TextStyle(fontSize: 14, color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
-          actions: [
-            Center(
-              child: Container(
-                width: 180,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: Color(0xFF00480A),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.check_circle_outline_sharp,
-                        color: Colors.white,
-                        size: 18,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Record Payment  ',
-                        style: TextStyle(fontSize: 14, color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
         );
       },
     );
