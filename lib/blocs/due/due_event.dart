@@ -4,3 +4,5 @@ part of 'due_bloc.dart';
 sealed class DueEvent {}
 
 class GetAllDueCount extends DueEvent {}
+
+class GetBuyersWithDueList extends DueEvent {}
