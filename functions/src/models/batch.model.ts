@@ -4,4 +4,5 @@ export interface BatchModel {
     pieces: number;
     note?: string;
     createdAt: Date;
+    sales: number;
 }
