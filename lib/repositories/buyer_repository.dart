@@ -73,4 +73,29 @@ class BuyerRepository {
       throw Exception('Failed to fetch buyers: $e');
     }
   }
+
+  Future<BuyerModel?> getBuyerBuyerId(String id) async {
+    try {
+      final idToken = await DatabaseService().getToken();
+
+      final response = await _dio.get(
+        '$_baseUrl/buyer/get-buyer/$id',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $idToken',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200 && response.data['data'] != null) {
+        final data = response.data;
+        final BuyerModel buyer = BuyerModel.fromMap(data['data']);
+        return buyer;
+      }
+      return null;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
 }
