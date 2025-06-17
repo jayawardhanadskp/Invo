@@ -164,7 +164,6 @@ class _SellPiecePageState extends State<SellPiecePage> {
                                 ),
                               ),
                           onItemSelected: (dynamic item) {
-                            print(item);
                             final state = context.read<BuyerBloc>().state;
                             if (state is BuyersListLoadedState) {
                               final buyer = state.buyers.firstWhere(
@@ -358,9 +357,7 @@ class _SellPiecePageState extends State<SellPiecePage> {
                                         setState(() {
                                           selectedPaymentOption = payment;
                                         });
-                                        print(
-                                          'Selected payment option: $payment',
-                                        );
+                                       
                                       },
                                       child: Container(
                                         margin: const EdgeInsets.symmetric(

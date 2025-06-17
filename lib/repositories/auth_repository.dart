@@ -33,7 +33,6 @@
 
         await DatabaseService().saveToken(idToken);
 
-        print('ID Token: $idToken \nUser: ${userCredential.user}');
         final response = await _dio.post(
           '${Constant.baseUrl}/${Constant.apiVersion}/auth/google-signin',
           options: Options(
@@ -52,7 +51,6 @@
         final data = jsonDecode(response.data);
         return data;
       } catch (e) {
-        print(e);
         throw Exception('Failed to sign in with Google: $e');
       }
     }

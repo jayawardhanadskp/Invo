@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'package:bloc/bloc.dart';
 import 'package:invo/models/batch_model.dart';
 import 'package:invo/repositories/batch_repository.dart';

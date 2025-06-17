@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api, deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:invo/pages/add_new_batch_page.dart';
 import 'package:invo/pages/buyers_page.dart';
@@ -5,13 +7,23 @@ import 'package:invo/pages/due_page.dart';
 import 'package:invo/pages/home_page.dart';
 import 'package:invo/pages/sell_piece_page.dart';
 
+final GlobalKey<_MainPageState> mainPageKey = GlobalKey<_MainPageState>();
+
 class MainPage extends StatefulWidget {
+  MainPage({Key? key}) : super(key: mainPageKey);
+
   @override
   _MainPageState createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
+
+  void onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   final List<Widget> _pages = [
     HomePage(),
@@ -30,7 +42,6 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return Scaffold(
       body: _pages[_selectedIndex],
       bottomNavigationBar: Container(
@@ -132,7 +143,6 @@ class _MainPageState extends State<MainPage> {
               ),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
-
             ),
           ],
         ),

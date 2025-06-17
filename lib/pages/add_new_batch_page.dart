@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:invo/blocs/batch/batch_bloc.dart';
-import 'package:invo/repositories/batch_repository.dart';
 import 'package:invo/utils/app_snackbars.dart';
 
 class AddNewBatchPage extends StatefulWidget {
@@ -176,7 +175,6 @@ class _AddNewBatchPageState extends State<AddNewBatchPage> {
                             'Batch added successfully!',
                           );
                         } else if (state is BatchFailure) {
-                          print('Error: ${state.error}');
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(

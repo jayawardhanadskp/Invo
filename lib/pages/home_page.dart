@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
-import 'package:invo/blocs/auth/auth_bloc.dart';
 import 'package:invo/blocs/batch/batch_bloc.dart';
 import 'package:invo/blocs/due/due_bloc.dart';
 import 'package:invo/blocs/purchase/purchase_bloc.dart';
-import 'package:invo/repositories/purchases_repository.dart';
+import 'package:invo/pages/main_page.dart';
 import 'package:shimmer/shimmer.dart';
 
 class HomePage extends StatefulWidget {
@@ -254,7 +253,9 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(height: 10),
 
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          mainPageKey.currentState?.onItemTapped(4);
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0xFFB39CD0),
                           shape: RoundedRectangleBorder(
@@ -337,9 +338,9 @@ class _HomePageState extends State<HomePage> {
                             baseColor: Color(0xFF101124),
                             highlightColor: Color(0xFF454654),
                             child: _recentSaleCard(
-                              customerName: 'customerName', 
-                              amount: 'amount', 
-                              dateTime: 'dateTime', 
+                              customerName: 'customerName',
+                              amount: 'amount',
+                              dateTime: 'dateTime',
                               paymentMethod: 'paymentMethod',
                             ),
                           );

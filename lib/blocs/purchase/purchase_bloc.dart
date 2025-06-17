@@ -1,5 +1,6 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'package:bloc/bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:invo/models/buyer_model.dart';
 import 'package:invo/models/purchase_model.dart';
 import 'package:invo/models/recent_sale_model.dart';
@@ -49,17 +50,15 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
 
           recentSales.add(
             RecentSale(
-              customerName: buyer!.name ?? '',
+              customerName: buyer!.name,
               amount: purchase.amount.toString(),
               dateTime: purchase.purchaseDate,
               paymentMethod: purchase.paymentType,
             ),
           );
-          print(recentSales);
           emit(GetPurchaseWithBuyerNameSuccessState(recentSales: recentSales));
         }
       } catch (error) {
-        print(error);
         emit(GetPurchaseWithBuyerNameErrorState(error: error.toString()));
       }
     });
