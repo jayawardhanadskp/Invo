@@ -17,3 +17,18 @@ final class BuyerErrorState extends BuyerState {
 
   BuyerErrorState(this.error);
 }
+
+
+
+final class SingleBuyerLoadingState extends BuyerState {}
+final class SingleBuyersListLoadedState extends BuyerState {
+  final BuyerModel buyer;
+
+  SingleBuyersListLoadedState(this.buyer);
+}
+
+final class SingleBuyerErrorState extends BuyerState {
+  final String error;
+
+  SingleBuyerErrorState(this.error);
+}
