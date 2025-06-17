@@ -7,10 +7,10 @@ import 'package:invo/pages/due_page.dart';
 import 'package:invo/pages/home_page.dart';
 import 'package:invo/pages/sell_piece_page.dart';
 
-
+final GlobalKey<_MainPageState> mainPageKey = GlobalKey<_MainPageState>();
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  MainPage({Key? key}) : super(key: mainPageKey);
 
   @override
   _MainPageState createState() => _MainPageState();
@@ -18,6 +18,12 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
+
+  void onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   final List<Widget> _pages = [
     HomePage(),
@@ -137,7 +143,6 @@ class _MainPageState extends State<MainPage> {
               ),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
-
             ),
           ],
         ),
