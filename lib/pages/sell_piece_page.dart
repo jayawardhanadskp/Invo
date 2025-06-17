@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:getwidget/getwidget.dart';
@@ -34,10 +36,13 @@ class _SellPiecePageState extends State<SellPiecePage> {
         _buyerNumberController.text.isNotEmpty;
   }
 
+  StreamSubscription? _buyerBlocSubscription;
+
   @override
   void initState() {
     super.initState();
     context.read<BuyerBloc>().add(GetBuyersListEvent());
+    context.read<BatchBloc>().add(GetBatchesEvent());
 
     _searchController.addListener(() {
       setState(() {});
@@ -56,11 +61,13 @@ class _SellPiecePageState extends State<SellPiecePage> {
     final state = context.read<BuyerBloc>().state;
     if (state is BuyersListLoadedState) {
       final names = state.buyers.map((buyer) => buyer.name).toList();
-      setState(() {
-        searchList = names;
-      });
+      if (mounted) {
+        setState(() {
+          searchList = names;
+        });
+      }
     } else {
-      context.read<BuyerBloc>().stream.listen((state) {
+      _buyerBlocSubscription = context.read<BuyerBloc>().stream.listen((state) {
         if (state is BuyersListLoadedState) {
           final names = state.buyers.map((buyer) => buyer.name).toList();
           if (mounted) {
@@ -75,6 +82,8 @@ class _SellPiecePageState extends State<SellPiecePage> {
 
   @override
   void dispose() {
+    _buyerBlocSubscription?.cancel();
+
     _searchController.dispose();
     _selectbuyerController.dispose();
     _buyerNameController.dispose();
@@ -107,13 +116,16 @@ class _SellPiecePageState extends State<SellPiecePage> {
               BlocListener<PurchaseBloc, PurchaseState>(
                 listener: (context, state) {
                   if (state is PurchaseSuccessState) {
-                    AppSnackbars.showSucessSnackbar(context, 'Sell pieces recodes sucessfully');
-                    _searchController.clear();
-                    _selectbuyerController.clear();
-                    _buyerNameController.clear();
-                    _buyerNumberController.clear();
-                    _pieceController.clear();
-                    _priceController.clear();
+                    AppSnackbars.showSucessSnackbar(
+                      context,
+                      'Sell pieces recodes sucessfully',
+                    );
+                    // _searchController.clear();
+                    // _selectbuyerController.clear();
+                    // _buyerNameController.clear();
+                    // _buyerNumberController.clear();
+                    // _pieceController.clear();
+                    // _priceController.clear();
                   }
                 },
                 child: Container(
@@ -456,29 +468,31 @@ class _SellPiecePageState extends State<SellPiecePage> {
                               ),
                             );
                           } else {
-                            final buyer = BuyerModel(
-                              id: selectedBuyer!.id,
-                              name: selectedBuyer!.name,
-                              phone: selectedBuyer!.phone,
-                            );
+                            if (selectedBuyer != null) {
+                              final buyer = BuyerModel(
+                                id: selectedBuyer!.id,
+                                name: selectedBuyer!.name,
+                                phone: selectedBuyer!.phone,
+                              );
 
-                            final purchase = PurchaseModel(
-                              pieces: int.parse(_pieceController.text),
-                              amount: int.parse(_priceController.text),
-                              paymentType: selectedPaymentOption,
-                              paymentStatus:
-                                  selectedPaymentOption == 'Credit'
-                                      ? 'Due'
-                                      : 'Paid',
-                              purchaseDate: DateTime.now(),
-                            );
+                              final purchase = PurchaseModel(
+                                pieces: int.parse(_pieceController.text),
+                                amount: int.parse(_priceController.text),
+                                paymentType: selectedPaymentOption,
+                                paymentStatus:
+                                    selectedPaymentOption == 'Credit'
+                                        ? 'Due'
+                                        : 'Paid',
+                                purchaseDate: DateTime.now(),
+                              );
 
-                            context.read<PurchaseBloc>().add(
-                              CreatePurchaseExistingBuyerEvent(
-                                buyer: buyer,
-                                purchase: purchase,
-                              ),
-                            );
+                              context.read<PurchaseBloc>().add(
+                                CreatePurchaseExistingBuyerEvent(
+                                  buyer: buyer,
+                                  purchase: purchase,
+                                ),
+                              );
+                            }
                           }
                         },
                         style: ElevatedButton.styleFrom(
@@ -531,18 +545,27 @@ class _SellPiecePageState extends State<SellPiecePage> {
 
                     const SizedBox(height: 10),
 
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Remaining pieces:',
-                          style: TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        Text(
-                          '20',
-                          style: TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                      ],
+                    BlocBuilder<BatchBloc, BatchState>(
+                      builder: (context, state) {
+                        if (state is GetBatchSuccess) {
+                          final batchList = state.batchList;
+                          final lastBatch = batchList[0];
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Remaining pieces:',
+                                style: TextStyle(fontWeight: FontWeight.w600),
+                              ),
+                              Text(
+                                lastBatch.pieces.toString(),
+                                style: TextStyle(fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          );
+                        }
+                        return SizedBox();
+                      },
                     ),
                   ],
                 ),
