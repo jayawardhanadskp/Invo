@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 import 'package:invo/blocs/auth/auth_bloc.dart';
+import 'package:invo/blocs/batch/batch_bloc.dart';
+import 'package:invo/blocs/due/due_bloc.dart';
+import 'package:invo/blocs/purchase/purchase_bloc.dart';
+import 'package:invo/repositories/purchases_repository.dart';
+import 'package:shimmer/shimmer.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,26 +17,28 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final List<Map<String, String>> sampleSales = [
-    {
-      'customerName': 'Amit Sharma',
-      'amount': 'RS 2100',
-      'dateTime': 'Today, 2:30 PM',
-      'paymentMethod': 'Cash',
-    },
-    {
-      'customerName': 'Priya Verma',
-      'amount': 'RS 1500',
-      'dateTime': 'Yesterday, 5:00 PM',
-      'paymentMethod': 'Cash',
-    },
-    {
-      'customerName': 'Ravi Kumar',
-      'amount': 'RS 3200',
-      'dateTime': 'Today, 11:00 AM',
-      'paymentMethod': 'Card',
-    },
-  ];
+  String formatCustomDate(DateTime inputDate) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(Duration(days: 1));
+    final input = DateTime(inputDate.year, inputDate.month, inputDate.day);
+
+    if (input == today) {
+      return 'Today';
+    } else if (input == yesterday) {
+      return 'Yesterday';
+    } else {
+      return DateFormat('dd MMM yyyy').format(inputDate);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<BatchBloc>().add(GetBatchesEvent());
+    context.read<DueBloc>().add(GetAllDueCount());
+    context.read<PurchaseBloc>().add(GetPurchaseWithBuyerNameEvent());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,40 +102,101 @@ class _HomePageState extends State<HomePage> {
 
               const SizedBox(height: 30),
 
-              GridView.count(
-                shrinkWrap: true,
-                padding: const EdgeInsets.all(0),
-                physics: NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                childAspectRatio: 1.9,
-                children: [
-                  _buildDashboardCard(
-                    icon: 'assets/svg/total pur.svg',
-                    title: 'Total Purchased',
-                    subtitle: '500g',
-                    onTap: () {},
-                  ),
-                  _buildDashboardCard(
-                    icon: 'assets/svg/pieces made.svg',
-                    title: 'Pieces Made',
-                    subtitle: '50',
-                    onTap: () {},
-                  ),
-                  _buildDashboardCard(
-                    icon: 'assets/svg/stoke left.svg',
-                    title: 'Stock Left',
-                    subtitle: '3250',
-                    onTap: () {},
-                  ),
-                  _buildDashboardCard(
-                    icon: 'assets/svg/total sales.svg',
-                    title: 'Total Sales',
-                    subtitle: 'RS. 8750',
-                    onTap: () {},
-                  ),
-                ],
+              BlocBuilder<BatchBloc, BatchState>(
+                builder: (context, state) {
+                  if (state is GetBatchSuccess) {
+                    final batch = state.batchList[0];
+
+                    final doubleGrams = double.tryParse(batch.grams) ?? 0;
+                    final pieacesMade = doubleGrams * 10;
+                    return GridView.count(
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.all(0),
+                      physics: NeverScrollableScrollPhysics(),
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      childAspectRatio: 1.9,
+                      children: [
+                        _buildDashboardCard(
+                          icon: 'assets/svg/total pur.svg',
+                          title: 'Total Purchased',
+                          subtitle: '${batch.grams}g',
+                          onTap: () {},
+                        ),
+                        _buildDashboardCard(
+                          icon: 'assets/svg/pieces made.svg',
+                          title: 'Pieces Made',
+                          subtitle: pieacesMade.toString().replaceAll('.0', ''),
+                          onTap: () {},
+                        ),
+                        _buildDashboardCard(
+                          icon: 'assets/svg/stoke left.svg',
+                          title: 'Stock Left',
+                          subtitle: batch.pieces.toString(),
+                          onTap: () {},
+                        ),
+                        _buildDashboardCard(
+                          icon: 'assets/svg/total sales.svg',
+                          title: 'Total Sales',
+                          subtitle: 'RS. ${batch.sales}',
+                          onTap: () {},
+                        ),
+                      ],
+                    );
+                  }
+                  return GridView.count(
+                    shrinkWrap: true,
+                    padding: const EdgeInsets.all(0),
+                    physics: NeverScrollableScrollPhysics(),
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 1.9,
+                    children: [
+                      Shimmer.fromColors(
+                        baseColor: Color(0xFF101124),
+                        highlightColor: Color(0xFF454654),
+                        child: _buildDashboardCard(
+                          icon: 'assets/svg/total pur.svg',
+                          title: 'Total Purchased',
+                          subtitle: '500g',
+                          onTap: () {},
+                        ),
+                      ),
+                      Shimmer.fromColors(
+                        baseColor: Color(0xFF101124),
+                        highlightColor: Color(0xFF454654),
+                        child: _buildDashboardCard(
+                          icon: 'assets/svg/pieces made.svg',
+                          title: 'Pieces Made',
+                          subtitle: '50',
+                          onTap: () {},
+                        ),
+                      ),
+                      Shimmer.fromColors(
+                        baseColor: Color(0xFF101124),
+                        highlightColor: Color(0xFF454654),
+                        child: _buildDashboardCard(
+                          icon: 'assets/svg/stoke left.svg',
+                          title: 'Stock Left',
+                          subtitle: '3250',
+                          onTap: () {},
+                        ),
+                      ),
+                      Shimmer.fromColors(
+                        baseColor: Color(0xFF101124),
+                        highlightColor: Color(0xFF454654),
+                        child: _buildDashboardCard(
+                          icon: 'assets/svg/total sales.svg',
+                          title: 'Total Sales',
+                          subtitle: 'RS. 8750',
+                          onTap: () {},
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
 
               const SizedBox(height: 30),
@@ -162,14 +231,22 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ],
                           ),
-                          Text(
-                            'RS. 2100',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.red,
-                              fontFamily: 'Inter_Bold',
-                              fontWeight: FontWeight.bold,
-                            ),
+                          BlocBuilder<DueBloc, DueState>(
+                            builder: (context, state) {
+                              if (state is DueDataState &&
+                                  state.count != null) {
+                                return Text(
+                                  'RS. ${state.count}',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.red,
+                                    fontFamily: 'Inter_Bold',
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                );
+                              }
+                              return Text('-- --');
+                            },
                           ),
                         ],
                       ),
@@ -235,18 +312,36 @@ class _HomePageState extends State<HomePage> {
                     const SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.all(15.0),
-                      child: ListView.builder(
-                        itemCount: sampleSales.length,
-                        shrinkWrap: true,
-                        padding: EdgeInsets.zero,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          final sale = sampleSales[index];
-                          return _recentSaleCard(
-                            customerName: sale['customerName']!,
-                            amount: sale['amount']!,
-                            dateTime: sale['dateTime']!,
-                            paymentMethod: sale['paymentMethod']!,
+                      child: BlocBuilder<PurchaseBloc, PurchaseState>(
+                        builder: (context, state) {
+                          if (state is GetPurchaseWithBuyerNameSuccessState) {
+                            final saleList = state.recentSales;
+
+                            return ListView.builder(
+                              itemCount: saleList.length,
+                              shrinkWrap: true,
+                              padding: EdgeInsets.zero,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemBuilder: (context, index) {
+                                final sale = saleList[index];
+                                return _recentSaleCard(
+                                  customerName: sale.customerName,
+                                  amount: sale.amount,
+                                  dateTime: formatCustomDate(sale.dateTime),
+                                  paymentMethod: sale.paymentMethod,
+                                );
+                              },
+                            );
+                          }
+                          return Shimmer.fromColors(
+                            baseColor: Color(0xFF101124),
+                            highlightColor: Color(0xFF454654),
+                            child: _recentSaleCard(
+                              customerName: 'customerName', 
+                              amount: 'amount', 
+                              dateTime: 'dateTime', 
+                              paymentMethod: 'paymentMethod',
+                            ),
                           );
                         },
                       ),
