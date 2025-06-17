@@ -28,8 +28,8 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: List build folder (for debugging)
-        run: ls -al build/app/outputs/flutter-apk/
+      # - name: List build folder (for debugging)
+      #   run: ls -al build/app/outputs/flutter-apk/
 
       - name: Upload Android APK as Artifact
         uses: actions/upload-artifact@v4
