@@ -18,3 +18,18 @@ final class PurchaseErrorState extends PurchaseState {
 
   PurchaseErrorState({required this.error});
 }
+
+
+final class GetPurchaseWithBuyerNameLoadingState extends PurchaseState {}
+
+final class GetPurchaseWithBuyerNameSuccessState extends PurchaseState {
+  final List<RecentSale> recentSales;
+
+  GetPurchaseWithBuyerNameSuccessState({required this.recentSales});
+}
+
+final class GetPurchaseWithBuyerNameErrorState extends PurchaseState {
+  final String error;
+
+  GetPurchaseWithBuyerNameErrorState({required this.error});
+}
