@@ -23,13 +23,24 @@ class BatchBloc extends Bloc<BatchEvent, BatchState> {
         batchRepository.createBatch(
           batch.grams,
           batch.pieces,
-          batch.pieces,
           batch.note ?? '',
           batch.createdAt,
         );
         emit(BatchSuccess(batch));
+        add(GetBatchesEvent());
       } catch (e) {
         emit(BatchFailure(e.toString()));
+        add(GetBatchesEvent());
+      }
+    });
+
+    on<GetBatchesEvent>((event, emit) async {
+      emit(GetBatchLoading());
+      try {
+        final batchList = await batchRepository.getBatchList();
+        emit(GetBatchSuccess(batchList));
+      } catch (e) {
+        emit(GetBatchFailure(e.toString()));
       }
     });
   }
