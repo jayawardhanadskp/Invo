@@ -9,7 +9,6 @@ part 'buyer_state.dart';
 class BuyerBloc extends Bloc<BuyerEvent, BuyerState> {
   final BuyerRepository buyerRepository;
   BuyerBloc(this.buyerRepository) : super(BuyerInitial()) {
-    
     on<GetBuyersListEvent>((event, emit) async {
       emit(BuyerLoadingState());
       try {
@@ -21,6 +20,20 @@ class BuyerBloc extends Bloc<BuyerEvent, BuyerState> {
         }
       } catch (e) {
         emit(BuyerErrorState(e.toString()));
+      }
+    });
+
+    on<GetBuyerByIdEvent>((event, emit) async {
+      emit(SingleBuyerLoadingState());
+      try {
+        final buyer = await buyerRepository.getBuyerBuyerId(event.buyerId);
+        if (buyer != null) {
+          emit(SingleBuyersListLoadedState(buyer));
+        } else {
+          emit(SingleBuyerErrorState('Buyer Not Found'));
+        }
+      } catch (e) {
+        emit(SingleBuyerErrorState(e.toString()));
       }
     });
   }
