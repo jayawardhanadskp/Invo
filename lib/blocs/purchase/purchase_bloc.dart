@@ -1,6 +1,9 @@
 import 'package:bloc/bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:invo/models/buyer_model.dart';
 import 'package:invo/models/purchase_model.dart';
+import 'package:invo/models/recent_sale_model.dart';
+import 'package:invo/repositories/buyer_repository.dart';
 import 'package:invo/repositories/purchases_repository.dart';
 import 'package:meta/meta.dart';
 
@@ -23,10 +26,41 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
     on<CreatePurchaseExistingBuyerEvent>((event, emit) {
       emit(PurchaseLoadingState());
       try {
-        purchasesRepository.createPurchaseExistingBuyer(event.buyer, event.purchase);
+        purchasesRepository.createPurchaseExistingBuyer(
+          event.buyer,
+          event.purchase,
+        );
         emit(PurchaseSuccessState(message: 'Purchase created successfully'));
       } catch (e) {
         emit(PurchaseErrorState(error: e.toString()));
+      }
+    });
+
+    on<GetPurchaseWithBuyerNameEvent>((event, emit) async {
+      emit(GetPurchaseWithBuyerNameLoadingState());
+      try {
+        final purchase = await purchasesRepository.getPurchasesWithBuyerName();
+        List<RecentSale> recentSales = [];
+
+        for (var purchase in purchase) {
+          final buyer = await BuyerRepository().getBuyerBuyerId(
+            purchase.buyerId ?? '',
+          );
+
+          recentSales.add(
+            RecentSale(
+              customerName: buyer!.name ?? '',
+              amount: purchase.amount.toString(),
+              dateTime: purchase.purchaseDate,
+              paymentMethod: purchase.paymentType,
+            ),
+          );
+          print(recentSales);
+          emit(GetPurchaseWithBuyerNameSuccessState(recentSales: recentSales));
+        }
+      } catch (error) {
+        print(error);
+        emit(GetPurchaseWithBuyerNameErrorState(error: error.toString()));
       }
     });
   }

@@ -42,7 +42,7 @@ class PurchaseModel {
       amount: map['amount'] as int,
       paymentType: map['paymentType'] as String,
       paymentStatus: map['paymentStatus'] as String,
-      purchaseDate: DateTime.fromMillisecondsSinceEpoch(map['purchaseDate'] as int),
+      purchaseDate: DateTime.parse(map['purchaseDate'] as String),
     );
   }
 

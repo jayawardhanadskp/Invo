@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:invo/blocs/batch/batch_bloc.dart';
+import 'package:invo/repositories/batch_repository.dart';
+import 'package:invo/utils/app_snackbars.dart';
 
 class AddNewBatchPage extends StatefulWidget {
   const AddNewBatchPage({super.key});
@@ -16,10 +18,13 @@ class _AddNewBatchPageState extends State<AddNewBatchPage> {
 
   double _pieces = 0;
 
+  bool seeAll = false;
+
   @override
   void initState() {
     super.initState();
     _gramsController.addListener(_updatePieces);
+    context.read<BatchBloc>().add(GetBatchesEvent());
   }
 
   void _updatePieces() {
@@ -166,11 +171,9 @@ class _AddNewBatchPageState extends State<AddNewBatchPage> {
                     BlocConsumer<BatchBloc, BatchState>(
                       listener: (context, state) {
                         if (state is BatchSuccess) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Batch added successfully!'),
-                              backgroundColor: Colors.green,
-                            ),
+                          AppSnackbars.showSucessSnackbar(
+                            context,
+                            'Batch added successfully!',
                           );
                         } else if (state is BatchFailure) {
                           print('Error: ${state.error}');
@@ -190,20 +193,19 @@ class _AddNewBatchPageState extends State<AddNewBatchPage> {
                         }
                         return ElevatedButton(
                           onPressed: () {
-                            
-                              final grams = _gramsController.text.trim();
-                              final pieces = _pieces.toInt().toString();
-                              final note = _noteController.text.trim();
-                              final createAt = DateTime.now();
+                            final grams = _gramsController.text.trim();
+                            final pieces = _pieces.toInt();
+                            final note = _noteController.text.trim();
+                            final createAt = DateTime.now();
 
-                              context.read<BatchBloc>().add(
-                                CreateBatch(
-                                  grams: grams,
-                                  pieces: pieces,
-                                  note: note,
-                                  createAt: createAt,
-                                ),
-                              );
+                            context.read<BatchBloc>().add(
+                              CreateBatch(
+                                grams: grams,
+                                pieces: pieces,
+                                note: note,
+                                createAt: createAt,
+                              ),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFFB39CD0),
@@ -259,42 +261,44 @@ class _AddNewBatchPageState extends State<AddNewBatchPage> {
                             'Current Inventory',
                             style: TextStyle(fontSize: 14, color: Colors.white),
                           ),
-                          Text(
-                            'See All',
-                            style: TextStyle(fontSize: 12, color: Colors.white),
+                          InkWell(
+                            onTap: () {
+                              setState(() {
+                                seeAll = !seeAll;
+                              });
+                            },
+                            child: Text(
+                              'See All',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 20),
-
-                      _currentInventoryDetails('Total purchased:', '500g'),
-                      const SizedBox(height: 5),
-                      _currentInventoryDetails(
-                        'Total pieces produced::',
-                        '5,000',
-                      ),
-                      const SizedBox(height: 5),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Remaining stock:',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFFB39CD0),
-                            ),
-                          ),
-                          Text(
-                            '3,250 pieces',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFFB39CD0),
-                            ),
-                          ),
-                        ],
+                      BlocBuilder<BatchBloc, BatchState>(
+                        builder: (context, state) {
+                          if (state is GetBatchSuccess) {
+                            final batchList = state.batchList;
+                            return ListView.builder(
+                              itemCount:
+                                  seeAll == false ? 1 : state.batchList.length,
+                              shrinkWrap: true,
+                              padding: EdgeInsets.all(0),
+                              physics: NeverScrollableScrollPhysics(),
+                              itemBuilder: (context, index) {
+                                final batch = batchList[index];
+                                return currentIntventoryCard(
+                                  batch.grams,
+                                  batch.pieces,
+                                );
+                              },
+                            );
+                          }
+                          return const Center(child: Text('No Batchs'));
+                        },
                       ),
                     ],
                   ),
@@ -304,6 +308,45 @@ class _AddNewBatchPageState extends State<AddNewBatchPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget currentIntventoryCard(String grams, int pieces) {
+    final doublegrams = double.tryParse(grams) ?? 0;
+    final totalPieces = (doublegrams * 10);
+    return Column(
+      children: [
+        _currentInventoryDetails('Total purchased:', grams),
+        const SizedBox(height: 5),
+        _currentInventoryDetails(
+          'Total pieces produced:',
+          totalPieces.toString().replaceAll('.0', ''),
+        ),
+        const SizedBox(height: 5),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              'Remaining stock:',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFFB39CD0),
+              ),
+            ),
+            Text(
+              '$pieces pieces',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFFB39CD0),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 15),
+      ],
     );
   }
 

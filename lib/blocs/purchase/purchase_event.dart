@@ -23,3 +23,8 @@ class CreatePurchaseExistingBuyerEvent extends PurchaseEvent {
   });
 }
 
+class GetPurchaseWithBuyerNameEvent extends PurchaseEvent {
+
+  GetPurchaseWithBuyerNameEvent();
+}
+

@@ -51,7 +51,7 @@ export async function createPurchase(
     ...purchase,
     id: generatedId,
     buyerId: buyerId,
-    purchaseDate: admin.firestore.Timestamp.fromDate(purchase.purchaseDate),
+    purchaseDate: purchase.purchaseDate.toISOString(),
   });
 
   // 3. Update buyer
@@ -73,11 +73,41 @@ export async function createPurchase(
   const currentPieces = batchData.pieces || 0;
   const updatedBatchPieces = Math.max(0, currentPieces - purchase.pieces);
 
+  const currentSales = batchData.sales || 0;
+  const updatedBatchSales = Math.max(0, currentSales + purchase.amount);
+
   await batchDoc.ref.update({
     pieces: updatedBatchPieces,
+    sales: updatedBatchSales,
   });
 
   // 5. Return saved purchase
   const savedPurchase = await purchaseRef.get();
   return savedPurchase.data() as PurchaseModel;
+}
+
+
+export async function getPurchaseList(uid: string): Promise<Array<PurchaseModel>> {
+  const db = admin.firestore();
+  
+  const purchaseRef = db
+    .collection('users')
+    .doc(uid)
+    .collection('purchases')
+    .orderBy('purchaseDate', 'desc');
+
+  const purchaseSnap = await purchaseRef.get();
+
+  if (purchaseSnap.empty) {
+    return [];
+  }
+
+  const purchases: PurchaseModel[] = [];
+
+  purchaseSnap.forEach(doc => {
+    const data = doc.data() as PurchaseModel;
+    purchases.push({...data});
+  });
+
+  return purchases;
 }

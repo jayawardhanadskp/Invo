@@ -6,7 +6,7 @@ sealed class BatchEvent {}
 
 class CreateBatch extends BatchEvent {
   final String grams;
-  final String pieces;
+  final int pieces;
   final String note;
   final DateTime createAt;
   CreateBatch({
@@ -16,3 +16,5 @@ class CreateBatch extends BatchEvent {
     required this.createAt,
   });
 }
+
+class GetBatchesEvent extends BatchEvent {}

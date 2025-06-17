@@ -16,3 +16,16 @@ class BatchFailure extends BatchState {
 
   BatchFailure(this.error);
 }
+
+
+class GetBatchLoading extends BatchState {}
+class GetBatchSuccess extends BatchState {
+  final List<BatchModel> batchList;
+
+  GetBatchSuccess(this.batchList);
+}
+class GetBatchFailure extends BatchState {
+  final String error;
+
+  GetBatchFailure(this.error);
+}
