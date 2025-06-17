@@ -101,4 +101,36 @@ class PurchasesRepository {
       throw Exception('Failed to create purchase with existing buyer: $e');
     }
   }
+
+  Future<List<PurchaseModel>> getPurchasesWithBuyerName() async {
+    try {
+      final idToken = await DatabaseService().getToken();
+      if (idToken == null) {
+        throw Exception('No ID token found');
+      }
+
+      final response = await _dio.get(
+        '$_baseUrl/purchases/purchaseList',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $idToken',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> rawData = response.data['data'];
+        final List<PurchaseModel> purchases =
+            rawData.map((purchase) => PurchaseModel.fromMap(purchase)).toList();
+        print(purchases);
+        return purchases;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print(e);
+      throw Exception(e.toString());
+    }
+  }
 }
