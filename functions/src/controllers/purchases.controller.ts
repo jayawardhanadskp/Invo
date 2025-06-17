@@ -1,5 +1,6 @@
 import { Response } from "express";
 import { createPurchase } from "../services/purchases.service";
+import { getPurchaseList } from "../services/purchases.service";
 import { AuthenticatedRequest } from "../middlewares/auth.middleware";
 
 export async function createPurchaseController(req: AuthenticatedRequest, res: Response) {
@@ -35,6 +36,27 @@ export async function createPurchaseController(req: AuthenticatedRequest, res: R
             error: error instanceof Error ? error.message : "Unknown error"
         });
     }
+}
 
+export async function getPurchaseListController(req: AuthenticatedRequest, res: Response) {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ error: "Unauthorized" });
+        }
 
+        const uid = req.user.uid;
+
+        const purchaseList = await getPurchaseList(uid);
+        return res.status(200).json({
+            success: true,
+            message: "Purchase list retrieved successfully",
+            data: purchaseList,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Error getting purchase list",
+            error: error instanceof Error ? error.message : "Unknown error"
+        })
+    }   
 }
