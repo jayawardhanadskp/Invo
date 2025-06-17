@@ -64,9 +64,6 @@ export async function getBuyersWithDue(
     console.log("Buyers with due:", results);
     return results;
 }
-
-
-
 export async function getBuyerFirstDueDate(
     uid: string,
     buyerId: string
@@ -99,4 +96,84 @@ export async function getBuyerFirstDueDate(
     }
 
     return ts.toDate();
+}
+
+export async function applyPayment(uid: string, buyerId: string, paymentAmount: number): Promise<void> {
+    const db = admin.firestore();
+
+    const purchaseRef = db
+        .collection('users')
+        .doc(uid)
+        .collection('purchases')
+        .where('buyerId', '==', buyerId)
+        .where('paymentStatus', '==', 'Due')
+        .orderBy('purchaseDate');
+
+    const purchaseSnap = await purchaseRef.get();
+    if (purchaseSnap.empty) return;
+
+    let remainingPayment = paymentAmount;
+    const batch = db.batch();
+
+    for (const doc of purchaseSnap.docs) {
+        if (remainingPayment <= 0) break;
+
+        const purchase = doc.data();
+        const docRef = doc.ref;
+        const amount = purchase.amount || 0;
+
+        if (remainingPayment >= amount) {
+            
+            batch.update(docRef, { paymentStatus: 'Paid' });
+            remainingPayment -= amount;
+        } else {
+            updateBuyerPaymentOnly(db, uid, buyerId, paymentAmount);
+            break;
+        }
+    }
+
+    const paidAmount = paymentAmount - remainingPayment;
+
+    // update buyer doc
+    const buyerRef = db
+        .collection('users')
+        .doc(uid)
+        .collection('buyers')
+        .doc(buyerId);
+
+    const buyerDoc = await buyerRef.get();
+    if (!buyerDoc.exists) throw new Error("Buyer not found");
+
+    const buyer = buyerDoc.data() as BuyerModel;
+
+    const newPaid = (buyer.totalPaid || 0) + paidAmount;
+    const newDue = Math.max((buyer.totalDue || 0) - paidAmount, 0);
+
+    batch.update(buyerRef, {
+        totalPaid: newPaid,
+        totalDue: newDue,
+    });
+
+    await batch.commit();
+}
+
+async function updateBuyerPaymentOnly(db: FirebaseFirestore.Firestore, uid: string, buyerId: string, paymentAmount: number) {
+    const buyerRef = db
+        .collection('users')
+        .doc(uid)
+        .collection('buyers')
+        .doc(buyerId);
+
+    const buyerDoc = await buyerRef.get();
+    if (!buyerDoc.exists) throw new Error("Buyer not found");
+
+    const buyer = buyerDoc.data() as BuyerModel;
+
+    const newPaid = (buyer.totalPaid || 0) + paymentAmount;
+    const newDue = (buyer.totalDue || 0) - paymentAmount;
+
+    await buyerRef.update({
+        totalPaid: newPaid,
+        totalDue: newDue,
+    });
 }
