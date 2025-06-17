@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'package:bloc/bloc.dart';
 import 'package:invo/models/buyer_model.dart';
 import 'package:invo/repositories/buyer_repository.dart';
@@ -20,20 +22,6 @@ class BuyerBloc extends Bloc<BuyerEvent, BuyerState> {
         }
       } catch (e) {
         emit(BuyerErrorState(e.toString()));
-      }
-    });
-
-    on<GetBuyerByIdEvent>((event, emit) async {
-      emit(SingleBuyerLoadingState());
-      try {
-        final buyer = await buyerRepository.getBuyerBuyerId(event.buyerId);
-        if (buyer != null) {
-          emit(SingleBuyersListLoadedState(buyer));
-        } else {
-          emit(SingleBuyerErrorState('Buyer Not Found'));
-        }
-      } catch (e) {
-        emit(SingleBuyerErrorState(e.toString()));
       }
     });
   }

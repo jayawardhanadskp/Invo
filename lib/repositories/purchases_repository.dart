@@ -23,12 +23,7 @@ class PurchasesRepository {
 
       final newBuyer = await _buyerRepository.createBuyer(buyer);
 
-      if (newBuyer == null) {
-        throw Exception('Failed to create buyer,');
-      }
-
       final buyerId = newBuyer.id;
-      print(buyerId);
 
       final response = await _dio.post(
         '$_baseUrl/purchases/create',
@@ -50,12 +45,10 @@ class PurchasesRepository {
       );
 
       if (response.statusCode == 201) {
-        print('Purchase created successfully');
       } else {
         throw Exception('Failed to create purchase');
       }
     } catch (e) {
-      print('Error creating purchase with new buyer: $e');
       throw Exception('Failed to create purchase with new buyer: $e');
     }
   }
@@ -92,12 +85,10 @@ class PurchasesRepository {
       );
 
       if (response.statusCode == 201) {
-        print('Purchase created successfully with existing buyer');
       } else {
         throw Exception('Failed to create purchase with existing buyer');
       }
     } catch (e) {
-      print('Error creating purchase with existing buyer: $e');
       throw Exception('Failed to create purchase with existing buyer: $e');
     }
   }
@@ -123,13 +114,11 @@ class PurchasesRepository {
         final List<dynamic> rawData = response.data['data'];
         final List<PurchaseModel> purchases =
             rawData.map((purchase) => PurchaseModel.fromMap(purchase)).toList();
-        print(purchases);
         return purchases;
       } else {
         return [];
       }
     } catch (e) {
-      print(e);
       throw Exception(e.toString());
     }
   }

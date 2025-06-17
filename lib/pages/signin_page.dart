@@ -4,7 +4,7 @@ import 'package:invo/blocs/auth/auth_bloc.dart';
 import 'package:invo/pages/main_page.dart';
 
 class SigninPage extends StatefulWidget {
-   SigninPage({super.key});
+   const SigninPage({super.key});
 
   @override
   State<SigninPage> createState() => _SigninPageState();

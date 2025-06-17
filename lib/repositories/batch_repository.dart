@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:invo/models/batch_model.dart';
-import 'package:invo/models/buyer_model.dart';
 import 'package:invo/services/database_service.dart';
 import 'package:invo/utils/constant.dart';
 
@@ -43,10 +42,8 @@ class BatchRepository {
       );
 
       if (response.statusCode == 200) {
-        print('create batch: ${response.statusMessage}');
       }
     } catch (e) {
-      print('Error creating batch: $e');
       throw Exception('Failed to create batch: $e');
     }
   }

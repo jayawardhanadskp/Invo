@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
-import 'package:invo/blocs/auth/auth_bloc.dart';
 import 'package:invo/blocs/batch/batch_bloc.dart';
 import 'package:invo/blocs/due/due_bloc.dart';
 import 'package:invo/blocs/purchase/purchase_bloc.dart';
-import 'package:invo/repositories/purchases_repository.dart';
 import 'package:shimmer/shimmer.dart';
 
 class HomePage extends StatefulWidget {

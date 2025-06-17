@@ -6,9 +6,4 @@ sealed class BuyerEvent {}
 
 class GetBuyersListEvent extends BuyerEvent {}
 
-class GetBuyerByIdEvent extends BuyerEvent {
-  String buyerId;
-  GetBuyerByIdEvent({
-    required this.buyerId,
-  });
-}
+

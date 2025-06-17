@@ -30,7 +30,6 @@ class DueRepository {
       }
       return 0;
     } catch (e) {
-      print(e);
       throw Exception(e);
     }
   }
@@ -82,14 +81,11 @@ class DueRepository {
       );
 
       if (response.statusCode == 201) {
-        print('Payment applied successfully');
         return response.data['message'];
       } else {
-        print('Failed to apply payment: ${response.data}');
         throw Exception('Server error: ${response.statusCode}');
       }
     } catch (e) {
-      print(e);
       throw Exception(e.toString());
     }
   }

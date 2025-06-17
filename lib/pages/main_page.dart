@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api, deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:invo/pages/add_new_batch_page.dart';
 import 'package:invo/pages/buyers_page.dart';
@@ -5,7 +7,11 @@ import 'package:invo/pages/due_page.dart';
 import 'package:invo/pages/home_page.dart';
 import 'package:invo/pages/sell_piece_page.dart';
 
+
+
 class MainPage extends StatefulWidget {
+  const MainPage({super.key});
+
   @override
   _MainPageState createState() => _MainPageState();
 }
@@ -30,7 +36,6 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return Scaffold(
       body: _pages[_selectedIndex],
       bottomNavigationBar: Container(
