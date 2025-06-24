@@ -10,7 +10,6 @@ part 'due_state.dart';
 class DueBloc extends Bloc<DueEvent, DueState> {
   final DueRepository _dueRepository;
   DueBloc(this._dueRepository) : super(DueDataState()) {
-    
     on<GetAllDueCount>((event, emit) async {
       emit((state as DueDataState).copyWith(isLoadingCount: true));
       try {
@@ -59,6 +58,8 @@ class DueBloc extends Bloc<DueEvent, DueState> {
           event.amount,
         );
         emit((state as DueDataState).copyWith(payDueSucess: payDueSucess));
+        // add(GetAllDueCount());
+        // add(GetBuyersWithDueList());
       } catch (e) {
         emit(
           (state as DueDataState).copyWith(

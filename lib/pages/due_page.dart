@@ -37,6 +37,7 @@ class _DuePageState extends State<DuePage> {
     if (queary.isEmpty) return buyersList;
     return buyersList.where((b) {
       final name = b['name']?.toString().toLowerCase() ?? '';
+
       return name.contains(queary);
     }).toList();
   }
@@ -62,13 +63,24 @@ class _DuePageState extends State<DuePage> {
             children: [
               const SizedBox(height: 60),
 
-              Text(
-                'Due Tracking',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.money_outlined,
+                    color: Color(0xFFB67CFF),
+                    size: 28,
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    'Due Tracking',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 30),
               Container(
@@ -141,10 +153,21 @@ class _DuePageState extends State<DuePage> {
                   ),
                 ),
                 child: BlocConsumer<DueBloc, DueState>(
-                  listener: (context, state) {
-                    // if (state is DueDataState && state.dueDetailsList != null) {
-                    //   context.read<DueBloc>().add(GetAllDueCount());
-                    // }
+                  listener: (context, state) async {
+                    if (state is DueDataState && state.payDueSucess != null) {
+                      // AppSnackbars.showSucessSnackbar(
+                      //   context,
+                      //   'Credit Due Saved Sucessfully',
+                      // );
+
+                      // await Future.delayed(Duration(microseconds: 300));
+
+
+                      // if (mounted) {
+                        // context.read<DueBloc>().add(GetAllDueCount());
+                        // context.read<DueBloc>().add(GetBuyersWithDueList());
+                      // }
+                    }
                   },
                   builder: (context, state) {
                     if (state is DueDataState && state.isLoadingList == true) {
@@ -311,7 +334,6 @@ class _DuePageState extends State<DuePage> {
         return BlocListener<DueBloc, DueState>(
           listener: (context, state) async {
             if (state is DueDataState && state.payDueSucess != null) {
-
               AppSnackbars.showSucessSnackbar(
                 context,
                 'Credit Due Saved Sucessfully',
