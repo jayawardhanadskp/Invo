@@ -103,7 +103,7 @@ class _HomePageState extends State<HomePage> {
 
               BlocBuilder<BatchBloc, BatchState>(
                 builder: (context, state) {
-                  if (state is GetBatchSuccess) {
+                  if (state is GetBatchSuccess && state.batchList.isNotEmpty) {
                     final batch = state.batchList[0];
 
                     final doubleGrams = double.tryParse(batch.grams) ?? 0;
@@ -139,6 +139,43 @@ class _HomePageState extends State<HomePage> {
                           icon: 'assets/svg/total sales.svg',
                           title: 'Total Sales',
                           subtitle: 'RS. ${batch.sales}',
+                          onTap: () {},
+                        ),
+                      ],
+                    );
+                  } else if (state is GetBatchSuccess &&
+                      state.batchList.isEmpty) {
+                    return GridView.count(
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.all(0),
+                      physics: NeverScrollableScrollPhysics(),
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      childAspectRatio: 1.9,
+                      children: [
+                        _buildDashboardCard(
+                          icon: 'assets/svg/total pur.svg',
+                          title: 'Total Purchased',
+                          subtitle: '0g',
+                          onTap: () {},
+                        ),
+                        _buildDashboardCard(
+                          icon: 'assets/svg/pieces made.svg',
+                          title: 'Pieces Made',
+                          subtitle: '0',
+                          onTap: () {},
+                        ),
+                        _buildDashboardCard(
+                          icon: 'assets/svg/stoke left.svg',
+                          title: 'Stock Left',
+                          subtitle: '0',
+                          onTap: () {},
+                        ),
+                        _buildDashboardCard(
+                          icon: 'assets/svg/total sales.svg',
+                          title: 'Total Sales',
+                          subtitle: 'RS. 0',
                           onTap: () {},
                         ),
                       ],
@@ -315,7 +352,8 @@ class _HomePageState extends State<HomePage> {
                       padding: const EdgeInsets.all(15.0),
                       child: BlocBuilder<PurchaseBloc, PurchaseState>(
                         builder: (context, state) {
-                          if (state is GetPurchaseWithBuyerNameSuccessState) {
+                          if (state is GetPurchaseWithBuyerNameSuccessState &&
+                              state.recentSales.isNotEmpty) {
                             final saleList = state.recentSales;
 
                             return ListView.builder(
@@ -333,17 +371,23 @@ class _HomePageState extends State<HomePage> {
                                 );
                               },
                             );
+                          } else if (state
+                              is GetPurchaseWithBuyerNameLoadingState) {
+                            return Shimmer.fromColors(
+                              baseColor: Color(0xFF101124),
+                              highlightColor: Color(0xFF454654),
+                              child: _recentSaleCard(
+                                customerName: 'customerName',
+                                amount: 'amount',
+                                dateTime: 'dateTime',
+                                paymentMethod: 'paymentMethod',
+                              ),
+                            );
+                          } else if (state
+                              is GetPurchaseWithBuyerNameEmptyState) {
+                            return Center(child: Text('No Sales Yet'));
                           }
-                          return Shimmer.fromColors(
-                            baseColor: Color(0xFF101124),
-                            highlightColor: Color(0xFF454654),
-                            child: _recentSaleCard(
-                              customerName: 'customerName',
-                              amount: 'amount',
-                              dateTime: 'dateTime',
-                              paymentMethod: 'paymentMethod',
-                            ),
-                          );
+                          return Center(child: Text('No Sales '));
                         },
                       ),
                     ),
