@@ -51,13 +51,24 @@ class _AddNewBatchPageState extends State<AddNewBatchPage> {
             children: [
               const SizedBox(height: 60),
 
-              Text(
-                'Add New Batch',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                  Icons.add_circle_outline_outlined,
+                  color: Color(0xFFB67CFF),
+                  size: 28,
                 ),
+                const SizedBox(width: 10),
+                  Text(
+                    'Add New Batch',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 30),
               Container(
@@ -278,7 +289,7 @@ class _AddNewBatchPageState extends State<AddNewBatchPage> {
                       const SizedBox(height: 20),
                       BlocBuilder<BatchBloc, BatchState>(
                         builder: (context, state) {
-                          if (state is GetBatchSuccess) {
+                          if (state is GetBatchSuccess && state.batchList.isNotEmpty) {
                             final batchList = state.batchList;
                             return ListView.builder(
                               itemCount:
