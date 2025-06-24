@@ -40,23 +40,33 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
     on<GetPurchaseWithBuyerNameEvent>((event, emit) async {
       emit(GetPurchaseWithBuyerNameLoadingState());
       try {
-        final purchase = await purchasesRepository.getPurchasesWithBuyerName();
+        final purchases = await purchasesRepository.getPurchasesWithBuyerName();
         List<RecentSale> recentSales = [];
+        if (purchases.length == 0) {
+            emit(GetPurchaseWithBuyerNameEmptyState(emptySales: []));
+          }
 
-        for (var purchase in purchase) {
+        for (var purchase in purchases) {
           final buyer = await BuyerRepository().getBuyerBuyerId(
             purchase.buyerId ?? '',
           );
+
+          
 
           recentSales.add(
             RecentSale(
               customerName: buyer!.name,
               amount: purchase.amount.toString(),
+              pieces: purchase.pieces,
               dateTime: purchase.purchaseDate,
               paymentMethod: purchase.paymentType,
             ),
           );
-          emit(GetPurchaseWithBuyerNameSuccessState(recentSales: recentSales));
+          if (recentSales.isEmpty) {
+            emit(GetPurchaseWithBuyerNameEmptyState(emptySales: []));
+          } else {
+            emit(GetPurchaseWithBuyerNameSuccessState(recentSales: recentSales));
+          }
         }
       } catch (error) {
         emit(GetPurchaseWithBuyerNameErrorState(error: error.toString()));

@@ -27,6 +27,11 @@ final class GetPurchaseWithBuyerNameSuccessState extends PurchaseState {
 
   GetPurchaseWithBuyerNameSuccessState({required this.recentSales});
 }
+final class GetPurchaseWithBuyerNameEmptyState extends PurchaseState {
+  final List emptySales;
+
+  GetPurchaseWithBuyerNameEmptyState({required this.emptySales});
+}
 
 final class GetPurchaseWithBuyerNameErrorState extends PurchaseState {
   final String error;

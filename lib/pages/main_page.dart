@@ -5,6 +5,7 @@ import 'package:invo/pages/add_new_batch_page.dart';
 import 'package:invo/pages/buyers_page.dart';
 import 'package:invo/pages/due_page.dart';
 import 'package:invo/pages/home_page.dart';
+import 'package:invo/pages/reports_page.dart';
 import 'package:invo/pages/sell_piece_page.dart';
 
 final GlobalKey<_MainPageState> mainPageKey = GlobalKey<_MainPageState>();
@@ -31,7 +32,7 @@ class _MainPageState extends State<MainPage> {
     SellPiecePage(),
     BuyersPage(),
     DuePage(),
-    Center(child: Text('Reports Page', style: TextStyle(fontSize: 24))),
+    ReportsPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -130,7 +131,7 @@ class _MainPageState extends State<MainPage> {
           children: [
             Icon(
               isSelected ? filledIcon : icon,
-              color: isSelected ? Color(0xFFB39CD0) : Colors.grey[600],
+              color: isSelected ? Color(0xFFB67CFF) : Colors.grey[600],
               size: 24,
             ),
             SizedBox(height: 4),

@@ -104,13 +104,24 @@ class _SellPiecePageState extends State<SellPiecePage> {
             children: [
               const SizedBox(height: 60),
 
-              Text(
-                'Add New Batch',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.shopping_cart_outlined,
+                    color: Color(0xFFB67CFF),
+                    size: 28,
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    'Add New Batch',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 30),
               BlocListener<PurchaseBloc, PurchaseState>(
@@ -357,7 +368,6 @@ class _SellPiecePageState extends State<SellPiecePage> {
                                         setState(() {
                                           selectedPaymentOption = payment;
                                         });
-                                       
                                       },
                                       child: Container(
                                         margin: const EdgeInsets.symmetric(
@@ -546,7 +556,11 @@ class _SellPiecePageState extends State<SellPiecePage> {
                       builder: (context, state) {
                         if (state is GetBatchSuccess) {
                           final batchList = state.batchList;
-                          final lastBatch = batchList[0];
+                          final lastBatch =
+                              batchList.isNotEmpty ? batchList[0] : null;
+                          
+
+                          if (lastBatch == null) return SizedBox();
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [

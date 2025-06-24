@@ -11,6 +11,7 @@ part 'batch_state.dart';
 class BatchBloc extends Bloc<BatchEvent, BatchState> {
   final BatchRepository batchRepository;
   BatchBloc(this.batchRepository) : super(BatchInitial()) {
+    
     on<CreateBatch>((event, emit) {
       emit(BatchLoading());
 
