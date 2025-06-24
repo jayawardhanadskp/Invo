@@ -41,13 +41,24 @@ class _BuyersPageState extends State<BuyersPage> {
             children: [
               const SizedBox(height: 60),
 
-              Text(
-                'Add New Batch',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                  Icons.group,
+                  color: Color(0xFFB67CFF),
+                  size: 28,
                 ),
+                const SizedBox(width: 10),
+                  Text(
+                    'Add New Batch',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 30),
 
