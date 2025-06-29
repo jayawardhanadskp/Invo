@@ -12,7 +12,7 @@ class AuthRepository {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final Dio _dio = Dio();
 
-  Future<UserModel> signInWithGoogle() async {
+  Future<void> signInWithGoogle() async {
   try {
     final googleUser = await _googleSignIn.signIn();
     if (googleUser == null) {
@@ -44,13 +44,13 @@ class AuthRepository {
       ),
     );
 
-    final firebaseUser = userCredential.user!;
-    return UserModel(
-      id: firebaseUser.uid,
-      email: firebaseUser.email ?? '',
-      displayName: firebaseUser.displayName ?? '',
-      image: firebaseUser.photoURL ?? '',
-    );
+    // final firebaseUser = userCredential.user!;
+    // return UserModel(
+    //   id: firebaseUser.uid,
+    //   email: firebaseUser.email ?? '',
+    //   displayName: firebaseUser.displayName ?? '',
+    //   image: firebaseUser.photoURL ?? '',
+    // );
 
   } catch (e) {
     throw Exception('Failed to sign in with Google: $e');

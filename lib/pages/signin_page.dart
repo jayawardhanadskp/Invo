@@ -23,7 +23,7 @@ class _SigninPageState extends State<SigninPage> {
       appBar: AppBar(title: const Text('Google Sign-In')),
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
-          if (state is AuthSuccess) {
+          if (state is AuthRegisterSucess) {
             Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage()));
           } else if (state is AuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
