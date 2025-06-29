@@ -16,8 +16,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthLoading());
 
       try {
-        final user = await authRepository.signInWithGoogle();
-        emit(AuthSuccess(user));
+        await authRepository.signInWithGoogle();
+        emit(AuthRegisterSucess());
       } catch (e) {
         emit(AuthFailure(e.toString()));
       }
