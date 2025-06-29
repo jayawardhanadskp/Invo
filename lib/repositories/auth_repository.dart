@@ -13,50 +13,49 @@ class AuthRepository {
   final Dio _dio = Dio();
 
   Future<void> signInWithGoogle() async {
-  try {
-    final googleUser = await _googleSignIn.signIn();
-    if (googleUser == null) {
-      throw Exception('Google sign-in aborted by user');
+    try {
+      final googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        throw Exception('Google sign-in aborted by user');
+      }
+      final googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      final userCredential = await _firebaseAuth.signInWithCredential(
+        credential,
+      );
+      final idToken = await userCredential.user?.getIdToken();
+      if (idToken == null) {
+        throw Exception('Failed to retrieve ID token');
+      }
+
+      await DatabaseService().saveToken(idToken);
+
+      final response = await _dio.post(
+        '${Constant.baseUrl}/${Constant.apiVersion}/auth/google-signin',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $idToken',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      // if (response.statusCode != 200) {
+      //   throw Exception(
+      //     'Failed to sign in with Google: ${response.statusMessage}',
+      //   );
+      // }
+      // final data = response.data;
+
+      // return UserModel.fromJson(data);
+    } catch (e) {
+      print(e);
+      throw Exception('Failed to sign in with Google: $e');
     }
-
-    final googleAuth = await googleUser.authentication;
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-
-    final userCredential = await _firebaseAuth.signInWithCredential(credential);
-    final idToken = await userCredential.user?.getIdToken();
-
-    if (idToken == null) {
-      throw Exception('Failed to retrieve ID token');
-    }
-
-    await DatabaseService().saveToken(idToken);
-
-    await _dio.post(
-      '${Constant.baseUrl}/${Constant.apiVersion}/auth/google-signin',
-      options: Options(
-        headers: {
-          'Authorization': 'Bearer $idToken',
-          'Content-Type': 'application/json',
-        },
-      ),
-    );
-
-    // final firebaseUser = userCredential.user!;
-    // return UserModel(
-    //   id: firebaseUser.uid,
-    //   email: firebaseUser.email ?? '',
-    //   displayName: firebaseUser.displayName ?? '',
-    //   image: firebaseUser.photoURL ?? '',
-    // );
-
-  } catch (e) {
-    throw Exception('Failed to sign in with Google: $e');
   }
-}
-
 
   Future<UserModel?> getCurrentUser() async {
     final user = _firebaseAuth.currentUser;
