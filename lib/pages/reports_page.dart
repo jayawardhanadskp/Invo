@@ -322,6 +322,8 @@ class _ReportsPageState extends State<ReportsPage>
               ),
             ),
           ),
+          const SizedBox(height: 20,),
+          
         ],
       ),
     );
