@@ -21,10 +21,14 @@ class _SellPiecePageState extends State<SellPiecePage> {
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _selectbuyerController = TextEditingController();
   final TextEditingController _buyerNameController = TextEditingController();
-  final TextEditingController _buyerNumberController = TextEditingController(text: '+94');
-  final TextEditingController _pieceController = TextEditingController();
+  final TextEditingController _buyerNumberController = TextEditingController(
+    text: '+94',
+  );
+  final TextEditingController _pieceController = TextEditingController(text: '1');
   final TextEditingController _priceController = TextEditingController();
   List searchList = [];
+
+  int enterdPieaceCount = 1;
 
   final List<String> paymentOptions = ['Cash', 'Card', 'Credit'];
   String selectedPaymentOption = 'Cash';
@@ -433,19 +437,66 @@ class _SellPiecePageState extends State<SellPiecePage> {
                             style: TextStyle(color: Colors.white),
                           ),
                           const SizedBox(height: 15),
-                          TextFormField(
-                            controller: _pieceController,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Color(0xFF313341),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(6),
-                                borderSide: BorderSide.none,
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextFormField(
+                                  controller: _pieceController,
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: Color(0xFF313341),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(6),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    hintText: 'Please enter piece count',
+                                    hintStyle: TextStyle(color: Colors.white54),
+                                  ),
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               ),
-                              hintText: 'Please enter piece count',
-                              hintStyle: TextStyle(color: Colors.white54),
-                            ),
-                            style: TextStyle(color: Colors.white),
+                              const SizedBox(width: 10),
+                              InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    if (enterdPieaceCount > 1) {
+                                      enterdPieaceCount -= 1;
+                                    }
+                                    _pieceController.text =
+                                        enterdPieaceCount.toString();
+                                  });
+                                },
+                                child: Container(
+                                  width: 52,
+                                  height: 52,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Center(child: Icon(Icons.remove_outlined)),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    enterdPieaceCount += 1;
+                                    _pieceController.text =
+                                        enterdPieaceCount.toString();
+                                    print(_pieceController.text);
+                                  });
+                                },
+                                child: Container(
+                                  width: 52,
+                                  height: 52,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Center(child: Icon(Icons.add)),
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 20),
                         ],
@@ -453,7 +504,7 @@ class _SellPiecePageState extends State<SellPiecePage> {
                       BlocBuilder<BatchBloc, BatchState>(
                         builder: (context, state) {
                           if (state is GetBatchSuccess) {
-                            final pieaceCount = state.batchList.first.pieces;
+                            final pieaceCount = state.batchList.isNotEmpty ? state.batchList.first.pieces : null;
                             return ElevatedButton(
                               onPressed: () {
                                 if (_pieceController.text.isEmpty ||
