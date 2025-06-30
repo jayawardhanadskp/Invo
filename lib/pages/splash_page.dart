@@ -111,10 +111,23 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthSuccess) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => MainPage()),
-            );
+            Timer(Duration(milliseconds: 1500), () {
+              Navigator.of(context).pushReplacement(
+                PageRouteBuilder(
+                  pageBuilder:
+                      (context, animation, secondaryAnimation) => MainPage(),
+                  transitionsBuilder: (
+                    context,
+                    animation,
+                    secondaryAnimation,
+                    child,
+                  ) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
+                  transitionDuration: Duration(milliseconds: 500),
+                ),
+              );
+            });
           } else if (state is AuthRegisterSucess) {
             Navigator.pushReplacement(
               context,
