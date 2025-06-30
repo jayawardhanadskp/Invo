@@ -90,12 +90,24 @@ export async function getBuyerFirstDueDate(
 
     const ts = firstDuePurchase?.purchaseDate;
 
-    if (!ts || typeof ts.toDate !== 'function') {
-        console.warn(`Invalid or missing purchaseDate for buyerId: ${buyerId}`);
+    if (!ts) {
+        console.warn(`Missing purchaseDate for buyerId: ${buyerId}`);
         return null;
     }
 
-    return ts.toDate();
+    let date: Date;
+
+    if (typeof ts === 'string') {
+        date = new Date(ts); 
+    } else if (typeof ts.toDate === 'function') {
+        date = ts.toDate(); 
+    } else {
+        console.warn(`Invalid purchaseDate format for buyerId: ${buyerId}`);
+        return null;
+    }
+
+    return date;
+
 }
 
 export async function applyPayment(uid: string, buyerId: string, paymentAmount: number): Promise<void> {
@@ -123,7 +135,7 @@ export async function applyPayment(uid: string, buyerId: string, paymentAmount: 
         const amount = purchase.amount || 0;
 
         if (remainingPayment >= amount) {
-            
+
             batch.update(docRef, { paymentStatus: 'Paid' });
             remainingPayment -= amount;
         } else {

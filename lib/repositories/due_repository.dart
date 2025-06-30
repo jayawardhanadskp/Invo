@@ -54,6 +54,7 @@ class DueRepository {
       if (response.statusCode == 200) {
         final data = response.data;
         final List<dynamic> dueList = data['data'];
+        print(dueList);
         return dueList;
       }
       return [];

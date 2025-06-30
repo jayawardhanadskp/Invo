@@ -154,12 +154,12 @@ class _BuyersPageState extends State<BuyersPage> {
                 margin: const EdgeInsets.only(left: 8),
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Color(0xFF454654),
+                  color: Color(0xFF8DEB92),
                   borderRadius: BorderRadius.circular(5),
                 ),
                 child: Text(
                   '${pieces.toString()} purchases',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.black),
                 ),
               ),
             ],

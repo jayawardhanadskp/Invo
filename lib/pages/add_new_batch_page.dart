@@ -302,6 +302,7 @@ class _AddNewBatchPageState extends State<AddNewBatchPage> {
                                 return currentIntventoryCard(
                                   batch.grams,
                                   batch.pieces,
+                                  batch.sales ?? 0,
                                 );
                               },
                             );
@@ -320,12 +321,12 @@ class _AddNewBatchPageState extends State<AddNewBatchPage> {
     );
   }
 
-  Widget currentIntventoryCard(String grams, int pieces) {
+  Widget currentIntventoryCard(String grams, int pieces, int sales) {
     final doublegrams = double.tryParse(grams) ?? 0;
     final totalPieces = (doublegrams * 10);
     return Column(
       children: [
-        _currentInventoryDetails('Total purchased:', grams),
+        _currentInventoryDetails('Total purchased:', sales.toString()),
         const SizedBox(height: 5),
         _currentInventoryDetails(
           'Total pieces produced:',
