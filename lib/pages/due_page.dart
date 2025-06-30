@@ -49,7 +49,7 @@ class _DuePageState extends State<DuePage> {
 
     try {
       final date = DateTime.parse(isoDateString).toLocal();
-      return DateFormat('dd MM yyyy').format(date);
+      return DateFormat('dd-MM-yyyy').format(date);
     } catch (e) {
       return 'Invalid Date';
     }
@@ -299,7 +299,7 @@ class _DuePageState extends State<DuePage> {
                 onTap: () {
                   _whatsapp.sendWhatsAppMessage(
                     phone,
-                    'You have to pay $amount',
+                    'Dear $name, your payment of $amount due on $since is still pending. Kindly complete it as soon as possible. Thank you.',
                   );
                 },
                 child: Container(
