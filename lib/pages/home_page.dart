@@ -16,6 +16,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool seeAll = false;
   String formatCustomDate(DateTime inputDate) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -332,9 +333,16 @@ class _HomePageState extends State<HomePage> {
                     'Recent Sales',
                     style: TextStyle(fontSize: 14, color: Colors.white),
                   ),
-                  Text(
-                    'See All',
-                    style: TextStyle(fontSize: 12, color: Colors.white),
+                  InkWell(
+                    onTap: () {
+                      setState(() {
+                        seeAll = !seeAll;
+                      });
+                    },
+                    child: Text(
+                      'See All',
+                      style: TextStyle(fontSize: 12, color: Colors.white),
+                    ),
                   ),
                 ],
               ),
@@ -357,7 +365,7 @@ class _HomePageState extends State<HomePage> {
                             final saleList = state.recentSales;
 
                             return ListView.builder(
-                              itemCount: saleList.length,
+                              itemCount: seeAll == true ? saleList.length : (saleList.length < 3) ? saleList.length : 3,
                               shrinkWrap: true,
                               padding: EdgeInsets.zero,
                               physics: NeverScrollableScrollPhysics(),
@@ -376,11 +384,27 @@ class _HomePageState extends State<HomePage> {
                             return Shimmer.fromColors(
                               baseColor: Color(0xFF101124),
                               highlightColor: Color(0xFF454654),
-                              child: _recentSaleCard(
-                                customerName: 'customerName',
-                                amount: 'amount',
-                                dateTime: 'dateTime',
-                                paymentMethod: 'paymentMethod',
+                              child: Column(
+                                children: [
+                                  _recentSaleCard(
+                                    customerName: 'customerName',
+                                    amount: 'amount',
+                                    dateTime: 'dateTime',
+                                    paymentMethod: 'paymentMethod',
+                                  ),
+                                  _recentSaleCard(
+                                    customerName: 'customerName',
+                                    amount: 'amount',
+                                    dateTime: 'dateTime',
+                                    paymentMethod: 'paymentMethod',
+                                  ),
+                                  _recentSaleCard(
+                                    customerName: 'customerName',
+                                    amount: 'amount',
+                                    dateTime: 'dateTime',
+                                    paymentMethod: 'paymentMethod',
+                                  ),
+                                ],
                               ),
                             );
                           } else if (state

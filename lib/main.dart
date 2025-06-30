@@ -51,6 +51,7 @@ class MyApp extends StatelessWidget {
         ],
         child: MaterialApp(
           title: 'Invo',
+          debugShowCheckedModeBanner: false,
           theme: AppTheme.darkTheme,
           home: SigninPage(),
         ),

@@ -123,7 +123,7 @@ class _MainPageState extends State<MainPage> {
           borderRadius: BorderRadius.circular(6),
           border:
               isSelected
-                  ? Border.all(color: Color(0xFFB39CD0), width: 2)
+                  ? Border.all(color: Color(0xFFB67CFF), width: 2)
                   : null,
         ),
         child: Column(
