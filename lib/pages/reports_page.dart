@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -642,7 +644,7 @@ class _ReportsPageState extends State<ReportsPage>
       final dateKey = DateFormat('MM/dd').format(saleDate);
       
       if (dailyData.containsKey(dateKey)) {
-        dailyData[dateKey] = (dailyData[dateKey] ?? 0) + (sale.pieces ?? 0);
+        dailyData[dateKey] = (dailyData[dateKey] ?? 0) + (sale.pieces);
       }
     }
     
@@ -667,7 +669,7 @@ class _ReportsPageState extends State<ReportsPage>
       final weekKey = 'W${DateFormat('MM/dd').format(weekStart)}';
       
       if (weeklyData.containsKey(weekKey)) {
-        weeklyData[weekKey] = (weeklyData[weekKey] ?? 0) + (sale.pieces ?? 0);
+        weeklyData[weekKey] = (weeklyData[weekKey] ?? 0) + (sale.pieces);
       }
     }
     
@@ -691,7 +693,7 @@ class _ReportsPageState extends State<ReportsPage>
       final monthKey = DateFormat('MMM').format(saleDate);
       
       if (monthlyData.containsKey(monthKey)) {
-        monthlyData[monthKey] = (monthlyData[monthKey] ?? 0) + (sale.pieces ?? 0);
+        monthlyData[monthKey] = (monthlyData[monthKey] ?? 0) + (sale.pieces);
       }
     }
     

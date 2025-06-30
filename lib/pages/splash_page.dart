@@ -5,16 +5,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:invo/blocs/auth/auth_bloc.dart';
-import 'package:invo/pages/home_page.dart';
 import 'package:invo/pages/main_page.dart';
 import 'package:invo/pages/signin_page.dart';
 
 class SplashPage extends StatefulWidget {
+  const SplashPage({super.key});
+
   @override
-  _SplashPageState createState() => _SplashPageState();
+  SplashPageState createState() => SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
+class SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
   late AnimationController _fadeController;
   late AnimationController _scaleController;
   late AnimationController _slideController;

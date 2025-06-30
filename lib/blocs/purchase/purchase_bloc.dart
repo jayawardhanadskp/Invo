@@ -42,7 +42,7 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
       try {
         final purchases = await purchasesRepository.getPurchasesWithBuyerName();
         List<RecentSale> recentSales = [];
-        if (purchases.length == 0) {
+        if (purchases.isEmpty) {
             emit(GetPurchaseWithBuyerNameEmptyState(emptySales: []));
           }
 

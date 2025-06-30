@@ -8,7 +8,6 @@ import 'package:invo/blocs/buyer/buyer_bloc.dart';
 import 'package:invo/blocs/due/due_bloc.dart';
 import 'package:invo/blocs/purchase/purchase_bloc.dart';
 import 'package:invo/firebase_options.dart';
-import 'package:invo/pages/signin_page.dart';
 import 'package:invo/pages/splash_page.dart';
 import 'package:invo/repositories/auth_repository.dart';
 import 'package:invo/repositories/batch_repository.dart';
