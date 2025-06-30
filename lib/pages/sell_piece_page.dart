@@ -21,7 +21,7 @@ class _SellPiecePageState extends State<SellPiecePage> {
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _selectbuyerController = TextEditingController();
   final TextEditingController _buyerNameController = TextEditingController();
-  final TextEditingController _buyerNumberController = TextEditingController();
+  final TextEditingController _buyerNumberController = TextEditingController(text: '+94');
   final TextEditingController _pieceController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   List searchList = [];
@@ -114,7 +114,7 @@ class _SellPiecePageState extends State<SellPiecePage> {
                   ),
                   const SizedBox(width: 10),
                   Text(
-                    'Add New Batch',
+                    'Sell Pieces',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -199,76 +199,85 @@ class _SellPiecePageState extends State<SellPiecePage> {
 
                         const SizedBox(height: 20),
                         if (selectedBuyer != null) ...[
-                          const SizedBox(height: 20),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    selectedBuyer!.name,
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  Container(
-                                    margin: const EdgeInsets.only(left: 8),
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Color(0xFF454654),
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                    child: Text(
-                                      '${selectedBuyer!.totalPieces} purchases',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 5),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.phone_outlined,
-                                    color: Colors.white,
-                                    size: 14,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    selectedBuyer!.phone.toString(),
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 5),
-                              if ((selectedBuyer!.totalDue) > 0)
+                          const SizedBox(height: 10),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 13,
+                            ),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.white),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                                 Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Icon(
-                                      Icons.warning_amber_rounded,
-                                      color: Color(0xFFFF3B30),
-                                      size: 17,
-                                    ),
-                                    const SizedBox(width: 4),
                                     Text(
-                                      'RS. ${selectedBuyer!.totalDue} credit due',
+                                      selectedBuyer!.name,
                                       style: TextStyle(
-                                        fontSize: 13,
-                                        color: Color(0xFFFF3B30),
+                                        fontSize: 15,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    Container(
+                                      margin: const EdgeInsets.only(left: 8),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Color(0xFF8DEB92),
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                      child: Text(
+                                        '${selectedBuyer!.totalPieces} purchases',
+                                        style: TextStyle(color: Colors.black),
                                       ),
                                     ),
                                   ],
                                 ),
-                            ],
+                                const SizedBox(height: 5),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.phone_outlined,
+                                      color: Colors.white,
+                                      size: 14,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      selectedBuyer!.phone.toString(),
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 5),
+                                if ((selectedBuyer!.totalDue) > 0)
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.warning_amber_rounded,
+                                        color: Color(0xFFFF3B30),
+                                        size: 17,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        'RS. ${selectedBuyer!.totalDue} credit due',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: Color(0xFFFF3B30),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                              ],
+                            ),
                           ),
                         ],
 
@@ -383,7 +392,10 @@ class _SellPiecePageState extends State<SellPiecePage> {
                                             6,
                                           ),
                                           border: Border.all(
-                                            color: Color(0xFF454654),
+                                            color:
+                                                selectedPaymentOption == payment
+                                                    ? Colors.white
+                                                    : Color(0xFF454654),
                                             width: 2,
                                           ),
                                         ),
@@ -438,93 +450,142 @@ class _SellPiecePageState extends State<SellPiecePage> {
                           const SizedBox(height: 20),
                         ],
                       ),
-                      ElevatedButton(
-                        onPressed: () {
-                          if (_pieceController.text.isEmpty ||
-                              _pieceController.text == '0') {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Please enter a valid piece count.',
+                      BlocBuilder<BatchBloc, BatchState>(
+                        builder: (context, state) {
+                          if (state is GetBatchSuccess) {
+                            final pieaceCount = state.batchList.first.pieces;
+                            return ElevatedButton(
+                              onPressed: () {
+                                if (_pieceController.text.isEmpty ||
+                                    _pieceController.text == '0') {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Please enter a valid piece count.',
+                                      ),
+                                    ),
+                                  );
+                                  return;
+                                }
+
+                                if (pieaceCount != 0 &&
+                                    pieaceCount != null &&
+                                    pieaceCount >=
+                                        int.parse(_pieceController.text)) {
+                                  if (isNewBuyer()) {
+                                    final buyer = BuyerModel(
+                                      name: _buyerNameController.text,
+                                      phone: int.parse(
+                                        _buyerNumberController.text,
+                                      ),
+                                    );
+
+                                    final purchase = PurchaseModel(
+                                      pieces: int.parse(_pieceController.text),
+                                      amount: int.parse(_priceController.text),
+                                      paymentType: selectedPaymentOption,
+                                      paymentStatus:
+                                          selectedPaymentOption == 'Credit'
+                                              ? 'Due'
+                                              : 'Paid',
+                                      purchaseDate: DateTime.now(),
+                                    );
+                                    context.read<PurchaseBloc>().add(
+                                      CreatePurchaseNewBuyerEvent(
+                                        buyer: buyer,
+                                        purchase: purchase,
+                                      ),
+                                    );
+                                  } else {
+                                    if (selectedBuyer != null) {
+                                      final buyer = BuyerModel(
+                                        id: selectedBuyer!.id,
+                                        name: selectedBuyer!.name,
+                                        phone: selectedBuyer!.phone,
+                                      );
+
+                                      final purchase = PurchaseModel(
+                                        pieces: int.parse(
+                                          _pieceController.text,
+                                        ),
+                                        amount: int.parse(
+                                          _priceController.text,
+                                        ),
+                                        paymentType: selectedPaymentOption,
+                                        paymentStatus:
+                                            selectedPaymentOption == 'Credit'
+                                                ? 'Due'
+                                                : 'Paid',
+                                        purchaseDate: DateTime.now(),
+                                      );
+
+                                      context.read<PurchaseBloc>().add(
+                                        CreatePurchaseExistingBuyerEvent(
+                                          buyer: buyer,
+                                          purchase: purchase,
+                                        ),
+                                      );
+                                    }
+                                  }
+                                } else {
+                                  AppSnackbars.showErrorSnackbar(
+                                    context,
+                                    'Batch out of stoke',
+                                  );
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xFFB39CD0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 10,
+                                ),
+                                fixedSize: Size(
+                                  MediaQuery.of(context).size.width,
+                                  48,
+                                ),
+                              ),
+                              child: Text(
+                                'Complete Sale',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xFF01031A),
+                                  fontFamily: 'Inter_Bold',
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                             );
-                            return;
                           }
-
-                          if (isNewBuyer()) {
-                            final buyer = BuyerModel(
-                              name: _buyerNameController.text,
-                              phone: int.parse(_buyerNumberController.text),
-                            );
-
-                            final purchase = PurchaseModel(
-                              pieces: int.parse(_pieceController.text),
-                              amount: int.parse(_priceController.text),
-                              paymentType: selectedPaymentOption,
-                              paymentStatus:
-                                  selectedPaymentOption == 'Credit'
-                                      ? 'Due'
-                                      : 'Paid',
-                              purchaseDate: DateTime.now(),
-                            );
-                            context.read<PurchaseBloc>().add(
-                              CreatePurchaseNewBuyerEvent(
-                                buyer: buyer,
-                                purchase: purchase,
+                          return ElevatedButton(
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFFB39CD0),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
                               ),
-                            );
-                          } else {
-                            if (selectedBuyer != null) {
-                              final buyer = BuyerModel(
-                                id: selectedBuyer!.id,
-                                name: selectedBuyer!.name,
-                                phone: selectedBuyer!.phone,
-                              );
-
-                              final purchase = PurchaseModel(
-                                pieces: int.parse(_pieceController.text),
-                                amount: int.parse(_priceController.text),
-                                paymentType: selectedPaymentOption,
-                                paymentStatus:
-                                    selectedPaymentOption == 'Credit'
-                                        ? 'Due'
-                                        : 'Paid',
-                                purchaseDate: DateTime.now(),
-                              );
-
-                              context.read<PurchaseBloc>().add(
-                                CreatePurchaseExistingBuyerEvent(
-                                  buyer: buyer,
-                                  purchase: purchase,
-                                ),
-                              );
-                            }
-                          }
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 10,
+                              ),
+                              fixedSize: Size(
+                                MediaQuery.of(context).size.width,
+                                48,
+                              ),
+                            ),
+                            child: Text(
+                              'Complete Sale',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Color(0xFF01031A),
+                                fontFamily: 'Inter_Bold',
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          );
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFFB39CD0),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 10,
-                          ),
-                          fixedSize: Size(
-                            MediaQuery.of(context).size.width,
-                            48,
-                          ),
-                        ),
-                        child: Text(
-                          'Complete Sale',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color(0xFF01031A),
-                            fontFamily: 'Inter_Bold',
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
                       ),
                       const SizedBox(height: 20),
                     ],
@@ -558,7 +619,6 @@ class _SellPiecePageState extends State<SellPiecePage> {
                           final batchList = state.batchList;
                           final lastBatch =
                               batchList.isNotEmpty ? batchList[0] : null;
-                          
 
                           if (lastBatch == null) return SizedBox();
                           return Row(
@@ -570,7 +630,10 @@ class _SellPiecePageState extends State<SellPiecePage> {
                               ),
                               Text(
                                 lastBatch.pieces.toString(),
-                                style: TextStyle(fontWeight: FontWeight.w600),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ],
                           );
