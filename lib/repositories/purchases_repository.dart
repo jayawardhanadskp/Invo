@@ -112,10 +112,8 @@ class PurchasesRepository {
 
       if (response.statusCode == 200) {
         final List<dynamic> rawData = response.data['data'];
-        print(rawData);
         final List<PurchaseModel> purchases =
             rawData.map((purchase) => PurchaseModel.fromMap(purchase)).toList();
-        print(purchases);
         return purchases;
       } else {
         return [];

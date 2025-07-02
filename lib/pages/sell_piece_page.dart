@@ -485,7 +485,6 @@ class _SellPiecePageState extends State<SellPiecePage> {
                                     enterdPieaceCount += 1;
                                     _pieceController.text =
                                         enterdPieaceCount.toString();
-                                    print(_pieceController.text);
                                   });
                                 },
                                 child: Container(

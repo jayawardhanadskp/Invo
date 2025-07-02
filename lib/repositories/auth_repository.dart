@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -33,7 +32,7 @@ class AuthRepository {
 
       await DatabaseService().saveToken(idToken);
 
-      final response = await _dio.post(
+      await _dio.post(
         '${Constant.baseUrl}/${Constant.apiVersion}/auth/google-signin',
         options: Options(
           headers: {
@@ -52,7 +51,6 @@ class AuthRepository {
 
       // return UserModel.fromJson(data);
     } catch (e) {
-      print(e);
       throw Exception('Failed to sign in with Google: $e');
     }
   }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:invo/blocs/due/due_bloc.dart';
+import 'package:invo/blocs/whatsapp/whatsapp_bloc.dart';
 import 'package:invo/repositories/whatsapp_message_repository.dart';
 import 'package:invo/utils/app_snackbars.dart';
 
@@ -295,38 +296,52 @@ class _DuePageState extends State<DuePage> {
                   ),
                 ),
               ),
-              InkWell(
-                onTap: () {
-                  _whatsapp.sendWhatsAppMessage(
-                    phone,
-                    'Dear $name, your payment of $amount due on $since is still pending. Kindly complete it as soon as possible. Thank you.',
-                  );
+              BlocListener<WhatsappBloc, WhatsappState>(
+                listener: (context, state) {
+                  if (state is SendMessageError) {
+                    AppSnackbars.showErrorSnackbar(
+                      context,
+                      'Cannot Open Whatsapp',
+                    );
+                  }
                 },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Color(0xFF272938),
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.notifications_none,
-                        color: Color(0xFF36AE09),
-                        size: 18,
+                child: InkWell(
+                  onTap: () {
+                    context.read<WhatsappBloc>().add(
+                      SendMessage(
+                        name: name,
+                        amount: amount,
+                        phone: phone,
+                        since: since,
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Notify',
-                        style: TextStyle(
-                          fontSize: 14,
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Color(0xFF272938),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.notifications_none,
                           color: Color(0xFF36AE09),
+                          size: 18,
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 4),
+                        Text(
+                          'Notify',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFF36AE09),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

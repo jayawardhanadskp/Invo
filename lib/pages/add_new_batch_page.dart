@@ -202,9 +202,9 @@ class _AddNewBatchPageState extends State<AddNewBatchPage> {
                         }
                         return ElevatedButton(
                           onPressed: () {
-                            final grams = _gramsController.text.trim();
+                            final grams = _gramsController.text;
                             final pieces = _pieces.toInt();
-                            final note = _noteController.text.trim();
+                            final note = _noteController.text;
                             final createAt = DateTime.now();
 
                             context.read<BatchBloc>().add(

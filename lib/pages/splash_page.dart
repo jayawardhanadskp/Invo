@@ -5,16 +5,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:invo/blocs/auth/auth_bloc.dart';
-import 'package:invo/pages/home_page.dart';
 import 'package:invo/pages/main_page.dart';
 import 'package:invo/pages/signin_page.dart';
 
 class SplashPage extends StatefulWidget {
+  const SplashPage({super.key});
+
   @override
-  _SplashPageState createState() => _SplashPageState();
+  SplashPageState createState() => SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
+class SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
   late AnimationController _fadeController;
   late AnimationController _scaleController;
   late AnimationController _slideController;
@@ -110,7 +111,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     return Scaffold(
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
-          if (state is AuthSuccess) {
+          if (state is AuthSuccess || state is AuthRegisterSucess) {
             Timer(Duration(milliseconds: 1500), () {
               Navigator.of(context).pushReplacement(
                 PageRouteBuilder(
@@ -128,11 +129,6 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                 ),
               );
             });
-          } else if (state is AuthRegisterSucess) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => MainPage()),
-            );
           } else if (state is AuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Sign-in failed: ${state.error}')),
