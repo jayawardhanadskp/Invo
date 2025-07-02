@@ -111,7 +111,7 @@ class SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     return Scaffold(
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
-          if (state is AuthSuccess) {
+          if (state is AuthSuccess || state is AuthRegisterSucess) {
             Timer(Duration(milliseconds: 1500), () {
               Navigator.of(context).pushReplacement(
                 PageRouteBuilder(
@@ -129,11 +129,6 @@ class SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                 ),
               );
             });
-          } else if (state is AuthRegisterSucess) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => MainPage()),
-            );
           } else if (state is AuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Sign-in failed: ${state.error}')),

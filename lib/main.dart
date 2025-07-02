@@ -7,6 +7,7 @@ import 'package:invo/blocs/batch/batch_bloc.dart';
 import 'package:invo/blocs/buyer/buyer_bloc.dart';
 import 'package:invo/blocs/due/due_bloc.dart';
 import 'package:invo/blocs/purchase/purchase_bloc.dart';
+import 'package:invo/blocs/whatsapp/whatsapp_bloc.dart';
 import 'package:invo/firebase_options.dart';
 import 'package:invo/pages/splash_page.dart';
 import 'package:invo/repositories/auth_repository.dart';
@@ -14,6 +15,7 @@ import 'package:invo/repositories/batch_repository.dart';
 import 'package:invo/repositories/buyer_repository.dart';
 import 'package:invo/repositories/due_repository.dart';
 import 'package:invo/repositories/purchases_repository.dart';
+import 'package:invo/repositories/whatsapp_message_repository.dart';
 import 'package:invo/theme/app_theme.dart';
 
 void main() async {
@@ -39,7 +41,8 @@ class MyApp extends StatelessWidget {
         RepositoryProvider<BatchRepository>(create: (context) => BatchRepository()),
         RepositoryProvider<PurchasesRepository>(create: (context) => PurchasesRepository()),
         RepositoryProvider<BuyerRepository>(create: (context) => BuyerRepository()),
-        RepositoryProvider<DueRepository>(create: (context) => DueRepository())
+        RepositoryProvider<DueRepository>(create: (context) => DueRepository()),
+        RepositoryProvider<WhatsappMessageRepository>(create: (context) => WhatsappMessageRepository())
       ],
       child: MultiBlocProvider(
         providers: [
@@ -48,6 +51,7 @@ class MyApp extends StatelessWidget {
           BlocProvider<PurchaseBloc>(create: (_) => PurchaseBloc(PurchasesRepository())),
           BlocProvider<BuyerBloc>(create: (_) => BuyerBloc(BuyerRepository())),
           BlocProvider<DueBloc>(create: (_) => DueBloc(DueRepository())),
+          BlocProvider<WhatsappBloc>(create: (_) => WhatsappBloc(WhatsappMessageRepository())),
         ],
         child: MaterialApp(
           title: 'Invo',
