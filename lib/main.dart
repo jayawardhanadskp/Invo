@@ -9,6 +9,7 @@ import 'package:invo/blocs/due/due_bloc.dart';
 import 'package:invo/blocs/purchase/purchase_bloc.dart';
 import 'package:invo/blocs/whatsapp/whatsapp_bloc.dart';
 import 'package:invo/firebase_options.dart';
+import 'package:invo/pages/fingureprint_screen.dart';
 import 'package:invo/pages/splash_page.dart';
 import 'package:invo/repositories/auth_repository.dart';
 import 'package:invo/repositories/batch_repository.dart';
@@ -57,7 +58,7 @@ class MyApp extends StatelessWidget {
           title: 'Invo',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.darkTheme,
-          home: SplashPage(),
+          home: FingureprintScreen(),
         ),
       ),
     );
