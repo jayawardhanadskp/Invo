@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:invo/blocs/auth/auth_bloc.dart';
 import 'package:invo/blocs/batch/batch_bloc.dart';
+import 'package:invo/blocs/biometric/biometric_bloc.dart';
 import 'package:invo/blocs/buyer/buyer_bloc.dart';
 import 'package:invo/blocs/due/due_bloc.dart';
 import 'package:invo/blocs/purchase/purchase_bloc.dart';
@@ -13,6 +14,7 @@ import 'package:invo/pages/fingureprint_screen.dart';
 import 'package:invo/pages/splash_page.dart';
 import 'package:invo/repositories/auth_repository.dart';
 import 'package:invo/repositories/batch_repository.dart';
+import 'package:invo/repositories/biometric_repository.dart';
 import 'package:invo/repositories/buyer_repository.dart';
 import 'package:invo/repositories/due_repository.dart';
 import 'package:invo/repositories/purchases_repository.dart';
@@ -43,7 +45,8 @@ class MyApp extends StatelessWidget {
         RepositoryProvider<PurchasesRepository>(create: (context) => PurchasesRepository()),
         RepositoryProvider<BuyerRepository>(create: (context) => BuyerRepository()),
         RepositoryProvider<DueRepository>(create: (context) => DueRepository()),
-        RepositoryProvider<WhatsappMessageRepository>(create: (context) => WhatsappMessageRepository())
+        RepositoryProvider<WhatsappMessageRepository>(create: (context) => WhatsappMessageRepository()),
+        RepositoryProvider<BiometricRepository>(create: (context) => BiometricRepository())
       ],
       child: MultiBlocProvider(
         providers: [
@@ -53,6 +56,7 @@ class MyApp extends StatelessWidget {
           BlocProvider<BuyerBloc>(create: (_) => BuyerBloc(BuyerRepository())),
           BlocProvider<DueBloc>(create: (_) => DueBloc(DueRepository())),
           BlocProvider<WhatsappBloc>(create: (_) => WhatsappBloc(WhatsappMessageRepository())),
+          BlocProvider<BiometricBloc>(create: (_) => BiometricBloc(BiometricRepository()))
         ],
         child: MaterialApp(
           title: 'Invo',
