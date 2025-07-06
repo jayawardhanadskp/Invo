@@ -26,71 +26,65 @@ class _FingureprintScreenState extends State<FingureprintScreen> {
     _attemptBiometricAuth();
   }
 
-  void _attemptBiometricAuth() {
-    if (!_initialAuthAttempted) {
-      // Set the flag to true only for the very first attempt on initState
-      _initialAuthAttempted = true;
-    }
-    // Dispatch the event to the Bloc
-    context.read<BiometricBloc>().add(AuthenticateBiometric());
-  }
+  bool _authInProgress = false;
+  bool _screenActive = true;
+
+void _attemptBiometricAuth({bool fromUser = false}) async {
+  if (_authInProgress || !_screenActive) return;
+
+  _authInProgress = true;
+  context.read<BiometricBloc>().add(AuthenticateBiometric());
+}
+
+@override
+void dispose() {
+  _screenActive = false;
+  super.dispose();
+}
+
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocListener<BiometricBloc, BiometricState>(
-        listener: (context, state) {
-          if (state is BiometricSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Authentication Successful!')),
-            );
-            // Update message (optional, as we're navigating)
-            setState(() {
-              _fingerprintMessage = 'Authentication successful!';
-            });
-            Timer(const Duration(milliseconds: 1500), () {
-              if (mounted) {
-                Navigator.of(context).pushReplacement(
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) =>
-                        MainPage(),
-                    transitionsBuilder: (
-                      context,
-                      animation,
-                      secondaryAnimation,
-                      child,
-                    ) {
-                      return FadeTransition(opacity: animation, child: child);
-                    },
-                    transitionDuration: const Duration(milliseconds: 500),
-                  ),
-                );
-              }
-            });
-          } else if (state is BiometricFailure) {
-            if (mounted) {
-              setState(() {
-                _fingerprintMessage = 'Authentication failed. Tap to try again.';
-              });
-              ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(state.message)));
-            }
-          } else if (state is BiometricUnavailable) {
-            if (mounted) {
-              setState(() {
-                _fingerprintMessage = 'Biometrics unavailable. Try other options.';
-              });
-              ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(state.message)));
-            }
-          } else if (state is BiometricLoading) {
-             if (mounted) {
-              setState(() {
-                _fingerprintMessage = 'Scanning fingerprint...';
-              });
-            }
-          }
-        },
+  listener: (context, state) async {
+    if (state is BiometricSuccess) {
+      setState(() {
+        _fingerprintMessage = 'Authentication successful!';
+      });
+      // Navigate after short delay
+      await Future.delayed(const Duration(milliseconds: 1500));
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => MainPage(),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+                FadeTransition(opacity: animation, child: child),
+            transitionDuration: const Duration(milliseconds: 500),
+          ),
+        );
+      }
+    } else if (state is BiometricFailure) {
+      setState(() {
+        _fingerprintMessage = 'Authentication failed. Retrying...';
+      });
+      // Automatically retry after delay
+      await Future.delayed(const Duration(seconds: 1));
+      _authInProgress = false; // Mark as done to allow retry
+      _attemptBiometricAuth();
+    } else if (state is BiometricUnavailable) {
+      setState(() {
+        _fingerprintMessage = 'Biometrics unavailable.';
+      });
+      _authInProgress = false; // Stop retrying
+    } else if (state is BiometricLoading) {
+      setState(() {
+        _fingerprintMessage = 'Scanning fingerprint...';
+      });
+    }
+  },
+
         child: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
